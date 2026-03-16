@@ -1,29 +1,40 @@
-from models import Pregunta, Alternativa, Progreso, Level
-from app import db
+from models import db, Pregunta, Alternativa, Level
 
-def verificar_respuesta(pregunta_id: int, respuesta: str) -> bool:
-    alternativas_obj = Alternativa.query.filter_by(id_preguntas=pregunta_id).all()
+def get_pregunta(level_id, ejercicio_index):
+    preguntas = Pregunta.query.filter_by(id_level=level_id).order_by(Pregunta.id).all()
+    indice_real = ejercicio_index - 1
     
-    for obj in alternativas_obj:
-        if obj.correcta == True:
-            respuesta_correcta = obj.alternativas
-            break
-    
-    if respuesta_correcta == respuesta:
-        return True
-    
-    return False
+    if not preguntas or indice_real < 0 or indice_real >= len(preguntas):
+        return None
+        
+    pregunta_db = preguntas[indice_real]
+    alternativas = Alternativa.query.filter_by(id_preguntas=pregunta_db.id).all()
+    opciones_formateadas = []
+    for alt in alternativas:
+        opciones_formateadas.append({
+            "id": alt.id, 
+            "texto": alt.alternativas
+        })
+        
+    return {
+        "id": pregunta_db.id,
+        "texto": pregunta_db.preguntas,
+        "opciones": opciones_formateadas
+    }
 
+def verificar_respuesta(estudiante_id, level_id, ejercicio_index, respuesta_id):
 
-def obtener_pregunta_y_respuestas(pregunta_id):
-    # almacenamos en la variable pregunta, el texto que se encuentra
-    # en la DB, bajo el campo preguntas
-    pregunta = Pregunta.query.get(pregunta_id).preguntas
-    # creamos un objeto que contiene todas las alternativas con id_preguntas=pregunta_id
-    alternativas_encontradas_obj = Alternativa.query.filter_by(id_preguntas=pregunta_id).all()
-    # creamos una lista iterando sobre el obj, para extraer solo el texto en el campo alternativas
-    lista_alternativas = []
-    for item in alternativas_encontradas_obj:
-        lista_alternativas.append(item.alternativas)
-    
-    return [pregunta, lista_alternativas]
+    try:
+        respuesta_elegida = Alternativa.query.get(int(respuesta_id))
+    except (ValueError, TypeError):
+        return {"aprobado": False, "error": "ID de respuesta inválido"}
+
+    if not respuesta_elegida:
+        return {"aprobado": False, "error": "Alternativa no encontrada"}
+
+    es_correcta = respuesta_elegida.correcta
+
+    if es_correcta:
+        pass
+
+    return {"aprobado": es_correcta}
