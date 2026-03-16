@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Penguin CodePro | Aprende a Programar</title>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
     
     <script src="https://cdn.tailwindcss.com"></script>
     
@@ -13,11 +15,11 @@
                 extend: {
                     colors: {
                         penguin: {
-                            dark: '#17192b',    /* El fondo oscuro exacto de la captura del roadmap */
-                            darker: '#121422',  /* Un tono más oscuro para el navbar y footer */
-                            yellow: '#fca311',  /* El amarillo/naranja del logo y los nodos */
-                            pink: '#e63946',    /* El rosado/rojo de la capa del pingüino */
-                            text: '#e2e8f0'     /* Texto claro para buena lectura */
+                            dark: '#17192b',    
+                            darker: '#121422',  
+                            yellow: '#fca311',  
+                            pink: '#e63946',    
+                            text: '#e2e8f0'     
                         }
                     },
                     fontFamily: {
@@ -28,41 +30,73 @@
         }
     </script>
     
-    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <style type="text/tailwindcss">
+        @layer components {
+            .btn-primary {
+                @apply bg-penguin-yellow hover:bg-yellow-400 text-penguin-darker px-6 py-2 rounded-full font-bold shadow-[0_4px_0_#d97706] hover:shadow-[0_2px_0_#d97706] hover:translate-y-[2px] transition-all cursor-pointer inline-block text-center;
+            }
+            .btn-secondary {
+                @apply bg-transparent border-2 border-penguin-pink text-penguin-pink hover:bg-penguin-pink hover:text-white px-6 py-2 rounded-full font-bold transition-all cursor-pointer inline-block text-center;
+            }
+            .alert-success {
+                @apply bg-green-500/10 border border-green-500 text-green-400 px-4 py-3 rounded-xl flex items-center gap-3 font-medium my-4;
+            }
+            .alert-error {
+                @apply bg-penguin-pink/10 border border-penguin-pink text-penguin-pink px-4 py-3 rounded-xl flex items-center gap-3 font-medium my-4;
+            }
+            .card-penguin {
+                @apply bg-penguin-darker/50 border border-gray-800 rounded-3xl p-8 shadow-2xl backdrop-blur-sm hover:border-penguin-yellow/50 transition-all;
+            }
+        }
+    </style>
 </head>
+
 <body class="bg-penguin-dark text-penguin-text font-sans min-h-screen flex flex-col antialiased selection:bg-penguin-yellow selection:text-penguin-darker">
 
-    <header class="bg-penguin-darker/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-800 shadow-lg">
+    <header class="bg-penguin-darker/90 backdrop-blur-md sticky top-0 z-50 border-b border-white/5 shadow-xl">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             
-            <a href="/" class="text-2xl font-black tracking-tight flex items-center gap-2 group">
-                <span class="text-penguin-yellow group-hover:text-penguin-pink transition-colors duration-300">&lt; &gt;</span> 
-                <span class="text-white">Penguin</span><span class="text-gray-400 font-light">CodePro</span>
+            <a href="/" class="text-2xl font-black tracking-tighter flex items-center gap-2 group">
+                <span class="text-penguin-yellow group-hover:rotate-12 transition-transform">&lt;🐧&gt;</span> 
+                <span class="text-white">Penguin</span><span class="text-penguin-yellow">CodePro</span>
             </a>
             
-            <ul class="flex items-center space-x-8 font-medium">
+            <ul class="flex items-center space-x-8">
                 <li>
-                    <a href="/roadmap" class="text-gray-300 hover:text-penguin-yellow transition-colors duration-200 flex items-center gap-2">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7"></path></svg>
-                        Mi Roadmap
-                    </a>
+                    <a href="/roadmap" class="text-gray-400 hover:text-white transition-colors font-medium">Mi Roadmap</a>
                 </li>
+
+                <li class="flex items-center gap-3 bg-black/30 px-4 py-2 rounded-2xl border border-white/10">
+                    <div class="flex items-center gap-1.5" title="Racha de días">
+                        <span class="text-lg">🐧</span> 
+                        <span class="font-black text-white text-sm tracking-widest"></span>
+                    </div>
+                    <div class="w-[1px] h-4 bg-white/10"></div>
+                    <div class="flex items-center gap-1.5" title="Krills ganados">
+                        <span class="text-lg">🦐</span>
+                        <span class="font-black text-penguin-pink text-sm tracking-widest"></span>
+                    </div>
+                </li>
+
                 <li>
-                    <a href="/login" class="bg-penguin-yellow hover:bg-yellow-400 text-penguin-darker px-6 py-2 rounded-full font-bold shadow-[0_4px_0_#d97706] hover:shadow-[0_2px_0_#d97706] hover:translate-y-[2px] transition-all">
-                        Ingresar
-                    </a>
+                    <a href="/login" class="btn-primary text-sm uppercase tracking-widest">Ingresar</a>
                 </li>
             </ul>
         </nav>
     </header>
 
-    <main class="container mx-auto px-4 py-8 flex-grow flex flex-col relative">
+    <main class="container mx-auto px-4 py-12 flex-grow">
         {% block content %}
         {% endblock %}
     </main>
 
-    <footer class="bg-penguin-darker text-gray-500 text-sm text-center py-6 mt-auto border-t border-gray-800">
-        <p>Hackathon 2026 - Hecho con <span class="text-penguin-pink">♥</span> por el equipo CodePro</p>
+    <footer class="bg-penguin-darker border-t border-white/5 py-8 mt-auto">
+        <div class="container mx-auto px-6 text-center">
+            <p class="text-gray-500 text-sm font-medium">
+                Hackathon 2026 — <span class="text-white">Hecho por el equipo</span> 
+                <span class="text-penguin-pink font-bold">CodePro</span>
+            </p>
+        </div>
     </footer>
 
 </body>
