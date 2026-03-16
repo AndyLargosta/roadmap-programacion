@@ -1,10 +1,15 @@
 from models import Pregunta, Alternativa, Progreso, Level
 from app import db
 
-def verificar_respuesta(pregunta_id: int, alternativa_id: int) -> bool:
-    alternativa_elegida = Alternativa.query.get(alternativa_id)
-
-    if alternativa_elegida.correcta:
+def verificar_respuesta(pregunta_id: int, respuesta: str) -> bool:
+    alternativas_obj = Alternativa.query.filter_by(id_preguntas=pregunta_id).all()
+    
+    for obj en alternativas_obj:
+        if obj.correcta == True:
+            respuesta_correcta = obj.alternativas
+            break
+    
+    if respuesta_correcta == respuesta:
         return True
     
     return False
