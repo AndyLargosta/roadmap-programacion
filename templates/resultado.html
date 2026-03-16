@@ -1,46 +1,21 @@
-<div class="modal-overlay" id="resultado-modal">
-    <div class="modal-content text-center">
-        
-        {% if resultado.aprobado %}
-            <div class="icono-resultado">✅</div>
-            <h2 class="titulo-exito">¡Respuesta Correcta!</h2>
-            <p class="texto-resultado">¡Excelente trabajo! Has demostrado tu conocimiento y puedes avanzar al siguiente desafío.</p>
-        {% else %}
-            <div class="icono-resultado">❌</div>
-            <h2 class="titulo-error">Respuesta Incorrecta</h2>
-            <p class="texto-resultado">No te desanimes. Repasa los conceptos de este nivel y vuelve a intentarlo cuando estés listo.</p>
-        {% endif %}
-        
-        <button class="btn-continuar" onclick="cerrarModal()">Continuar en el Roadmap</button>
-    </div>
+<div class="bg-[#252848] p-10 border-2 rounded-2xl w-full mx-auto text-center shadow-2xl 
+            {% if resultado.aprobado %}border-[#28a745]{% else %}border-[#dc3545]{% endif %}">
+
+    {% if resultado.aprobado %}
+        <div class="text-7xl mb-4 animate-bounce">✅</div>
+        <h2 class="text-2xl font-black text-[#28a745] mb-4">¡Respuesta Correcta!</h2>
+        <p class="text-[#8B8FB5] mb-8 leading-relaxed">
+            ¡Excelente trabajo! Has demostrado tu conocimiento y sumaste progreso en tu roadmap.
+        </p>
+    {% else %}
+        <div class="text-7xl mb-4">❌</div>
+        <h2 class="text-2xl font-black text-[#dc3545] mb-4">Respuesta Incorrecta</h2>
+        <p class="text-[#8B8FB5] mb-8 leading-relaxed">
+            No te desanimes. Repasa los conceptos de este nivel y vuelve a intentarlo cuando estés listo.
+        </p>
+    {% endif %}
+
+    <button type="button" onclick="cerrarModal()" class="block w-full py-4 bg-[#353760] hover:bg-[#5C5F82] text-white font-bold rounded-xl transition-colors hover:scale-[1.02]">
+        Continuar en el Roadmap
+    </button>
 </div>
-
-
-<style>
-
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 1000;
-}
-.modal-content.text-center {
-    background: white; padding: 35px 25px; border-radius: 12px;
-    max-width: 400px; width: 90%; text-align: center;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    font-family: sans-serif;
-}
-.icono-resultado {
-    font-size: 60px; margin-bottom: 15px;
-}
-.titulo-exito { color: #28a745; margin-bottom: 10px; font-size: 24px; }
-.titulo-error { color: #dc3545; margin-bottom: 10px; font-size: 24px; }
-.texto-resultado { font-size: 16px; color: #555; margin-bottom: 25px; line-height: 1.5; }
-
-.btn-continuar {
-    width: 100%; padding: 12px; border: none; border-radius: 8px;
-    background: #6c757d; color: white; font-size: 16px; font-weight: bold;
-    cursor: pointer; transition: background 0.2s;
-}
-.btn-continuar:hover { background: #5a6268; }
-</style>
