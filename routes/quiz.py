@@ -11,3 +11,10 @@ def cargar_pregunta(pregunta_id):
         return "Pregunta no encontrada", 404
     
     return render_template('quiz.html', pregunta=pregunta_data)
+
+@quiz.route('/pregunt/<int:pregunta_id>/enviar', methods=['POST'])
+def enviar_quiz(pregunta_id):
+    alternativa_id = request.form.get('alternativa')
+    aprobado = verificar_respuesta(alternativa_id)
+
+    return render_template('resultado.html', resultado={'aprobado': aprobado}, pregunta_id=pregunta_id)
