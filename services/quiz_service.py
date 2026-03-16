@@ -1,4 +1,4 @@
-from models import db, Pregunta, Alternativa, Level
+from models import db, Pregunta, Alternativa, Level, Progreso
 
 def get_pregunta(level_id, ejercicio_index):
     preguntas = Pregunta.query.filter_by(id_level=level_id).order_by(Pregunta.id).all()
@@ -38,3 +38,37 @@ def verificar_respuesta(estudiante_id, level_id, ejercicio_index, respuesta_id):
         pass
 
     return {"aprobado": es_correcta}
+
+def actualizar_progreso(pregunta_id: int, estudiante_id: int)
+    
+    # 1. Obtener la pregunta y su level
+    pregunta = Pregunta.query.get_or_404(pregunta_id)
+    level = pregunta.level
+
+    # 2. Buscar o crear el progreso
+    progreso = Progreso.query.filter_by(
+        id_estudiante=estudiante_id,
+        id_level=level.id
+    ).first()
+
+    if not progreso:
+        progreso = Progreso(
+            id_estudiante=estudiante_id,
+            id_level=level.id,
+            completado=False,
+            puntaje=0
+        )
+        db.session.add(progreso)
+
+    # 3. Incrementar puntaje (siempre correcto si llega aquí)
+    progreso.puntaje += 1
+
+    # 4. Verificar si el level se completó
+    total_preguntas = Pregunta.query.filter_by(id_level=level.id).count()
+    if progreso.puntaje >= total_preguntas:
+        progreso.completado = True
+
+    db.session.commit()
+    return progreso
+
+### asegurarse de que tambien suba a la DB level una vez que todas las preguntas esten completas
