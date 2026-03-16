@@ -57,3 +57,26 @@
 }
 .btn-enviar:hover { background: #0056b3; }
 </style>
+
+<script>
+document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        let bloque = this.closest('.pregunta-bloque');
+        let respuestaCorrecta = bloque.getAttribute('data-correcta');
+        let labels = bloque.querySelectorAll('.opcion-label');
+        
+        labels.forEach(l => {
+            l.style.backgroundColor = 'transparent';
+            l.style.borderColor = '#ddd';
+        });
+        
+        if (this.value === respuestaCorrecta) {
+            this.parentElement.style.backgroundColor = '#d4edda';
+            this.parentElement.style.borderColor = '#c3e6cb';
+        } else {
+            this.parentElement.style.backgroundColor = '#f8d7da';
+            this.parentElement.style.borderColor = '#f5c6cb';
+        }
+    });
+});
+</script>
