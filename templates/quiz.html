@@ -1,0 +1,25 @@
+<div class="modal-overlay" id="quiz-modal">
+    <div class="modal-content">
+        <span class="cerrar-modal" onclick="cerrarModal('quiz-modal')">&times;</span>
+        
+        <h2>Cuestionario</h2>
+        
+        <form id="quiz-form" action="{{ url_for('quiz.enviar_quiz', pregunta_id=pregunta.id) }}" method="POST">
+            
+            <div class="pregunta-bloque" data-correcta="{{ pregunta.correcta_id }}">
+                <p class="texto-pregunta"><strong>{{ pregunta.texto }}</strong></p>
+                
+                <div class="opciones-container">
+                    {% for alt in pregunta.alternativas %}
+                        <label class="opcion-label">
+                            <input type="radio" name="alternativa" value="{{ alt.id }}" required>
+                            {{ alt.alternativas }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-enviar">Comprobar Respuesta</button>
+        </form>
+    </div>
+</div>
