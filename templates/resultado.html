@@ -1,0 +1,16 @@
+<div class="modal-overlay" id="resultado-modal">
+    <div class="modal-content text-center">
+        
+        {% if resultado.aprobado %}
+            <div class="icono-resultado">✅</div>
+            <h2 class="titulo-exito">¡Respuesta Correcta!</h2>
+            <p class="texto-resultado">¡Excelente trabajo! Has demostrado tu conocimiento y puedes avanzar al siguiente desafío.</p>
+        {% else %}
+            <div class="icono-resultado">❌</div>
+            <h2 class="titulo-error">Respuesta Incorrecta</h2>
+            <p class="texto-resultado">No te desanimes. Repasa los conceptos de este nivel y vuelve a intentarlo cuando estés listo.</p>
+        {% endif %}
+        
+        <button class="btn-continuar" onclick="cerrarModal()">Continuar en el Roadmap</button>
+    </div>
+</div>
