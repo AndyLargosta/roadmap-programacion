@@ -9,3 +9,16 @@ def verificar_respuesta(pregunta_id: int, alternativa_id: int) -> bool:
     
     return False
 
+
+def obtener_pregunta_y_respuestas(pregunta_id):
+    # almacenamos en la variable pregunta, el texto que se encuentra
+    # en la DB, bajo el campo preguntas
+    pregunta = Pregunta.query.get(pregunta_id).preguntas
+    # creamos un objeto que contiene todas las alternativas con id_preguntas=pregunta_id
+    alternativas_encontradas_obj = Alternativa.query.filter_by(id_preguntas=pregunta_id).all()
+    # creamos una lista iterando sobre el obj, para extraer solo el texto
+    lista_alternativas = []
+    for item in alternativas_encontradas_obj:
+        lista_alternativas.append(item.alternativas)
+    
+    return [pregunta, lista_alternativas]
