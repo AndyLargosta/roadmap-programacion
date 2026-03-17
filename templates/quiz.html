@@ -12,10 +12,19 @@
     <h1 class="text-2xl text-white font-black mb-8 text-center">{{ pregunta.texto }}</h1>
 
     <form class="flex flex-col gap-4">
+        <button type="button"
+                onclick="activarComodin()"
+                class="mb-4 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg">
+            Usar comodín
+        </button>
         {% for opcion in pregunta.opciones %}
-        <label class="flex items-center gap-4 p-4 border-2 border-[#353760] rounded-xl cursor-pointer hover:bg-[#353760] hover:border-[#F4B942] transition-all group">
+        <label 
+            data-comodin="{{ opcion.comodin | lower }}"
+            class="opcion flex items-center gap-4 p-4 border-2 border-[#353760] rounded-xl cursor-pointer transition-all hover:bg-[#353760] hover:border-[#F4B942] group">
+            
             <input type="radio" name="respuesta" value="{{ opcion.id }}" required 
-                   class="w-5 h-5 text-[#F4B942] bg-[#1A1C38] border-[#353760] focus:ring-[#F4B942]">
+                class="w-5 h-5 text-[#F4B942] bg-[#1A1C38] border-[#353760] focus:ring-[#F4B942]">
+
             <span class="text-lg group-hover:text-white text-gray-300">{{ opcion.texto }}</span>
         </label>
         {% endfor %}
