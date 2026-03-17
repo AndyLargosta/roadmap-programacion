@@ -1,10 +1,6 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mi Roadmap</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+{% extends "base.html" %}
+{% block content %}
+
     <style>
         /* posicion de cada nodo en el zigzag.
            tailwind no soporta porcentajes arbitrarios en padding */
@@ -42,10 +38,10 @@
             border-radius: 10px;
         }
     </style>
-</head>
 
-<body class="bg-[#1A1C38] min-h-screen overflow-hidden font-sans">
-<div class="flex h-screen w-full">
+
+<div class="bg-[#1A1C38] min-h-screen  font-sans">
+<div class="flex h-screen w-full overflow-hidden">
 
     <div class="col-roadmap flex-1 overflow-y-auto overflow-x-hidden pb-16">
         <div class="max-w-[900px] mx-auto px-8 py-8 text-center">
@@ -334,5 +330,5 @@
         window.location.reload(); 
     }
 </script>
-</body>
-</html>
+
+{% endblock %}
