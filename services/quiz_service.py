@@ -17,7 +17,7 @@ def get_pregunta(level_id, ejercicio_index):
     incorrectas = [alt for alt in alternativas if not alt.correcta]
     correctas = [alt for alt in alternativas if alt.correcta]
 
-    comodines = random.sample(incorrectas, k=min(2, len(incorrectas)))
+    comodines = random.sample(incorrectas, k=min(1, len(incorrectas)))
     
     # formateamos las alternativas para pasarlas al template
     opciones_formateadas = []
