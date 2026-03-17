@@ -1,82 +1,28 @@
-<div class="modal-overlay" id="quiz-modal">
-    <div class="modal-content">
-        <span class="cerrar-modal" onclick="cerrarModal('quiz-modal')">&times;</span>
+<div class="bg-[#252848] rounded-2xl border-2 border-[#353760] p-8 shadow-2xl relative w-full">
         
-        <h2>Cuestionario</h2>
-        
-        <form id="quiz-form" action="{{ url_for('quiz.enviar_quiz', pregunta_id=pregunta.id) }}" method="POST">
-            
-            <div class="pregunta-bloque" data-correcta="{{ pregunta.correcta_id }}">
-                <p class="texto-pregunta"><strong>{{ pregunta.texto }}</strong></p>
-                
-                <div class="opciones-container">
-                    {% for alt in pregunta.alternativas %}
-                        <label class="opcion-label">
-                            <input type="radio" name="alternativa" value="{{ alt.id }}" required>
-                            {{ alt.alternativas }}
-                        </label>
-                    {% endfor %}
-                </div>
-            </div>
-            
-            <button type="submit" class="btn-enviar">Comprobar Respuesta</button>
-        </form>
+    <div class="flex justify-between items-center mb-6 border-b border-[#353760] pb-4">
+        <span class="text-[#F4B942] font-bold uppercase tracking-widest text-xs">
+            Nivel {{ level_id }} • Ejercicio {{ ejercicio_id }}
+        </span>
+        <button type="button" onclick="cerrarModal()" class="text-[#8B8FB5] hover:text-white transition-colors font-bold text-sm">
+            ✕ Abandonar
+        </button>
     </div>
+
+    <h1 class="text-2xl text-white font-black mb-8 text-center">{{ pregunta.texto }}</h1>
+
+    <form class="flex flex-col gap-4">
+        {% for opcion in pregunta.opciones %}
+        <label class="flex items-center gap-4 p-4 border-2 border-[#353760] rounded-xl cursor-pointer hover:bg-[#353760] hover:border-[#F4B942] transition-all group">
+            <input type="radio" name="respuesta" value="{{ opcion.id }}" required 
+                   class="w-5 h-5 text-[#F4B942] bg-[#1A1C38] border-[#353760] focus:ring-[#F4B942]">
+            <span class="text-lg group-hover:text-white text-gray-300">{{ opcion.texto }}</span>
+        </label>
+        {% endfor %}
+
+        <button type="submit" 
+                class="mt-6 w-full py-4 bg-[#F4B942] hover:bg-[#D9A030] text-[#252848] font-black rounded-xl text-lg transition-all shadow-[0_4px_16px_rgba(244,185,66,0.3)] hover:scale-[1.02]">
+            Enviar Respuesta
+        </button>
+    </form>
 </div>
-
-<style>
-
-.modal-overlay {
-    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-    background: rgba(0, 0, 0, 0.6);
-    display: flex; justify-content: center; align-items: center;
-    z-index: 1000;
-}
-.modal-content {
-    background: white; padding: 25px; border-radius: 12px;
-    max-width: 500px; width: 90%; position: relative;
-    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-    font-family: sans-serif;
-}
-.cerrar-modal {
-    position: absolute; top: 10px; right: 15px;
-    font-size: 24px; cursor: pointer; color: #aaa;
-}
-.cerrar-modal:hover { color: #333; }
-.texto-pregunta { font-size: 18px; margin-bottom: 20px; }
-.opciones-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-.opcion-label {
-    display: block; padding: 10px 15px; border: 1px solid #ddd;
-    border-radius: 8px; cursor: pointer; transition: background 0.2s;
-}
-.opcion-label:hover { background: #f9f9f9; }
-.btn-enviar {
-    width: 100%; padding: 12px; border: none; border-radius: 8px;
-    background: #007bff; color: white; font-size: 16px; font-weight: bold;
-    cursor: pointer; transition: background 0.2s;
-}
-.btn-enviar:hover { background: #0056b3; }
-</style>
-
-<script>
-document.querySelectorAll('input[type="radio"]').forEach(radio => {
-    radio.addEventListener('change', function() {
-        let bloque = this.closest('.pregunta-bloque');
-        let respuestaCorrecta = bloque.getAttribute('data-correcta');
-        let labels = bloque.querySelectorAll('.opcion-label');
-        
-        labels.forEach(l => {
-            l.style.backgroundColor = 'transparent';
-            l.style.borderColor = '#ddd';
-        });
-        
-        if (this.value === respuestaCorrecta) {
-            this.parentElement.style.backgroundColor = '#d4edda';
-            this.parentElement.style.borderColor = '#c3e6cb';
-        } else {
-            this.parentElement.style.backgroundColor = '#f8d7da';
-            this.parentElement.style.borderColor = '#f5c6cb';
-        }
-    });
-});
-</script>
