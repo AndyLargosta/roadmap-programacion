@@ -17,6 +17,10 @@ def create_app():
     from routes.roadmap import roadmap
     from routes.quiz import quiz
 
+    app.register_blueprint(auth)
+    app.register_blueprint(roadmap)
+    app.register_blueprint(quiz)
+
     with app.app_context():
         db.create_all()
 
