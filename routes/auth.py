@@ -28,7 +28,7 @@ def login():
         session['user_id'] = user.id
         session['user_email'] = user.email
         session['is_new'] = is_new
-
+        session['nombre_usuario'] = user.email.split('@')[0]
         return redirect(url_for('roadmap.index'))
 
     return render_template('login.html', error=error, email=email)
