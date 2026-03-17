@@ -57,11 +57,6 @@
         background: #353760;
         border-radius: 10px;
     }
-
-    /* en mobile el dashboard se oculta y el roadmap ocupa todo */
-    @media (max-width: 640px) {
-        .col-dashboard { display: none; }
-    }
 </style>
 
 <div class="bg-[#1A1C38] min-h-screen font-sans">
@@ -213,12 +208,12 @@
         </div>
     </div>
 
-    <!-- columna derecha: dashboard fijo — se oculta en mobile -->
+    <!-- dashboard desktop: visible solo en sm+ -->
     <aside class="col-dashboard hidden sm:flex w-[22%] min-w-[180px] max-w-[240px]
                   bg-[#20234A] border-2 border-[#F4B942] rounded-2xl
-                  overflow-y-auto flex-col gap-2 m-3 ml-0 p-3 mb-40">
+                  flex-col gap-2 mx-3 my-3 ml-0 p-3 h-fit self-start">
 
-        <!-- perfil del estudiante -->
+        <!-- perfil -->
         <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
                     flex flex-col items-center gap-1.5">
             <div class="w-12 h-12 rounded-full bg-[#1A1C38] border-2 border-[#F4B942]
@@ -236,22 +231,22 @@
             </span>
         </div>
 
-        <!-- barra de progreso total -->
+        <!-- progreso total -->
         <div class="bg-[#252848] rounded-xl border border-[#353760] p-3 flex flex-col gap-1.5">
             <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest">
                 Progreso total
             </span>
-            {% set completados_total = levels | selectattr('estado', 'equalto', 'completado')
-                                              | list | length %}
-            {% set total_niveles = levels | list | length %}
-            {% set pct = ((completados_total / total_niveles) * 100) | int
-                         if total_niveles > 0 else 0 %}
+            {% set completados_dash = levels | selectattr('estado', 'equalto', 'completado')
+                                             | list | length %}
+            {% set total_dash = levels | list | length %}
+            {% set pct = ((completados_dash / total_dash) * 100) | int
+                         if total_dash > 0 else 0 %}
             <div class="w-full h-1.5 bg-[#353760] rounded-full overflow-hidden">
                 <div class="h-full bg-[#F4B942] rounded-full transition-all duration-500"
                      style="width: {{ pct }}%; min-width: 4px;"></div>
             </div>
             <span class="text-[#8B8FB5] text-[10px] self-end">
-                {{ completados_total }}/{{ total_niveles }} niveles
+                {{ completados_dash }}/{{ total_dash }} niveles
             </span>
         </div>
 
@@ -304,10 +299,95 @@
     </aside>
 
 </div>
+
+<!-- boton flotante mobile: arriba a la derecha, debajo del navbar -->
+<button onclick="toggleDashboard()"
+        class="sm:hidden fixed top-28 right-4 z-40 w-12 h-12 rounded-full
+               bg-[#F4B942] text-[#252848] text-xl font-black
+               flex items-center justify-center
+               shadow-[0_4px_16px_rgba(244,185,66,0.5)]">
+    📊
+</button>
+
+<!-- dashboard mobile: panel flotante, oculto por defecto -->
+<div id="mobile-dashboard"
+     class="sm:hidden fixed top-44 right-4 z-40 w-64
+            bg-[#20234A] border-2 border-[#F4B942] rounded-2xl
+            flex-col gap-2 p-3 hidden
+            shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+
+    <!-- perfil mobile -->
+    <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
+                flex flex-col items-center gap-1.5">
+        <div class="w-10 h-10 rounded-full bg-[#1A1C38] border-2 border-[#F4B942]
+                    flex items-center justify-center">
+            <span class="text-xl font-black text-[#F4B942]">
+                {{ session.get('nombre_usuario', 'E')[0] | upper }}
+            </span>
+        </div>
+        <span class="text-white text-sm font-bold">
+            {{ session.get('nombre_usuario', 'Estudiante') }}
+        </span>
+        <span class="bg-[#F4B942] text-[#252848] text-[10px] font-bold
+                     px-3 py-0.5 rounded-full">
+            Nivel {{ session.get('nivel', 1) }}
+        </span>
+    </div>
+
+    <!-- progreso mobile -->
+    <div class="bg-[#252848] rounded-xl border border-[#353760] p-3 flex flex-col gap-1.5">
+        <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest">
+            Progreso total
+        </span>
+        {% set completados_mob = levels | selectattr('estado', 'equalto', 'completado')
+                                        | list | length %}
+        {% set total_mob = levels | list | length %}
+        {% set pct_mob = ((completados_mob / total_mob) * 100) | int
+                         if total_mob > 0 else 0 %}
+        <div class="w-full h-1.5 bg-[#353760] rounded-full overflow-hidden">
+            <div class="h-full bg-[#F4B942] rounded-full"
+                 style="width: {{ pct_mob }}%; min-width: 4px;"></div>
+        </div>
+        <span class="text-[#8B8FB5] text-[10px] self-end">
+            {{ completados_mob }}/{{ total_mob }} niveles
+        </span>
+    </div>
+
+    <!-- niveles mobile -->
+    <div class="bg-[#252848] rounded-xl border border-[#353760] p-3 flex flex-col gap-1.5">
+        <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest mb-1">
+            Niveles completados
+        </span>
+        {% for level in levels %}
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full flex-shrink-0
+                {% if level.estado == 'completado' %}bg-[#F4B942]
+                {% elif level.estado == 'disponible' %}bg-white border border-[#F4B942]
+                {% else %}bg-[#353760]{% endif %}">
+            </span>
+            <span class="flex-1 text-white text-[10px] font-medium truncate">
+                {{ level.titulo }}
+            </span>
+            {% if level.estado == 'completado' %}
+                <span class="text-[#F4B942] text-[10px] font-bold">✓</span>
+            {% elif level.estado == 'disponible' %}
+                <span class="text-[#F4B942] text-[10px] font-bold">
+                    {{ level.completados }}/4
+                </span>
+            {% else %}
+                <span class="text-[#5C5F82] text-[10px]">🔒</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
 </div>
 
 <!-- modal del quiz -->
-<div id="quiz-modal" class="fixed inset-0 bg-[#000000cc] backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+<div id="quiz-modal"
+     class="fixed inset-0 bg-[#000000cc] backdrop-blur-sm z-50 hidden items-center justify-center p-4">
     <div id="quiz-modal-content" class="w-full max-w-2xl"></div>
 </div>
 
@@ -327,7 +407,7 @@
             const html = await response.text();
             modalContent.innerHTML = html;
 
-            // intercepta el submit del formulario para no recargar la pagina
+            // intercepta el submit para no recargar la pagina
             const form = modalContent.querySelector('form');
             if (form) {
                 form.addEventListener('submit', async (e) => {
@@ -351,6 +431,18 @@
         modal.classList.remove('flex');
         modal.classList.add('hidden');
         window.location.reload();
+    }
+
+    // muestra u oculta el dashboard flotante en mobile
+    function toggleDashboard() {
+        const dash = document.getElementById('mobile-dashboard');
+        if (dash.classList.contains('hidden')) {
+            dash.classList.remove('hidden');
+            dash.classList.add('flex');
+        } else {
+            dash.classList.remove('flex');
+            dash.classList.add('hidden');
+        }
     }
 </script>
 
