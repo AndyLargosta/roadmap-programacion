@@ -1,4 +1,5 @@
 from models import db, Pregunta, Alternativa, Level, Progreso
+import random
 
 
 def get_pregunta(level_id, ejercicio_index):
@@ -18,6 +19,7 @@ def get_pregunta(level_id, ejercicio_index):
         {'id': alt.id, 'texto': alt.alternativas}
         for alt in alternativas
     ]
+    random.shuffle(opciones_formateadas)
 
     return {
         'id':      pregunta_db.id,
