@@ -49,3 +49,4 @@ class Progreso(db.Model):
     id_level      = db.Column(db.Integer, db.ForeignKey('levels.id'), nullable=False)
     completado    = db.Column(db.Boolean, default=False, nullable=False)
     puntaje       = db.Column(db.Integer, default=0, nullable=False)
+    comodin       = db.Column(db.Integer, default=3, nullable=False)
