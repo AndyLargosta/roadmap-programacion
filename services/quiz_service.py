@@ -1,74 +1,93 @@
 from models import db, Pregunta, Alternativa, Level, Progreso
 
+
 def get_pregunta(level_id, ejercicio_index):
+    # buscamos todas las preguntas del nivel ordenadas por id
     preguntas = Pregunta.query.filter_by(id_level=level_id).order_by(Pregunta.id).all()
     indice_real = ejercicio_index - 1
-    
+
+    # si el indice no existe devolvemos None
     if not preguntas or indice_real < 0 or indice_real >= len(preguntas):
         return None
-        
+
     pregunta_db = preguntas[indice_real]
     alternativas = Alternativa.query.filter_by(id_preguntas=pregunta_db.id).all()
-    opciones_formateadas = []
-    for alt in alternativas:
-        opciones_formateadas.append({
-            "id": alt.id, 
-            "texto": alt.alternativas
-        })
-        
+
+    # formateamos las alternativas para pasarlas al template
+    opciones_formateadas = [
+        {'id': alt.id, 'texto': alt.alternativas}
+        for alt in alternativas
+    ]
+
     return {
-        "id": pregunta_db.id,
-        "texto": pregunta_db.preguntas,
-        "opciones": opciones_formateadas
+        'id':      pregunta_db.id,
+        'texto':   pregunta_db.preguntas,
+        'opciones': opciones_formateadas,
     }
 
-def verificar_respuesta(estudiante_id, level_id, ejercicio_index, respuesta_id):
 
+def verificar_respuesta(estudiante_id, level_id, ejercicio_index, respuesta_id):
+    # verificamos que el id de respuesta sea valido
     try:
         respuesta_elegida = Alternativa.query.get(int(respuesta_id))
     except (ValueError, TypeError):
-        return {"aprobado": False, "error": "ID de respuesta inválido"}
+        return {'aprobado': False, 'error': 'id de respuesta invalido'}
 
     if not respuesta_elegida:
-        return {"aprobado": False, "error": "Alternativa no encontrada"}
+        return {'aprobado': False, 'error': 'alternativa no encontrada'}
 
     es_correcta = respuesta_elegida.correcta
 
     if es_correcta:
-        pass
+        _actualizar_progreso(estudiante_id, level_id, ejercicio_index)
 
-    return {"aprobado": es_correcta}
-
-def actualizar_progreso(pregunta_id: int, estudiante_id: int)
-    
-    # 1. Obtener la pregunta y su level
-    pregunta = Pregunta.query.get_or_404(pregunta_id)
-    level = pregunta.level
-
-    # 2. Buscar o crear el progreso
+    # calculamos cuantos ejercicios completo el estudiante en este nivel
     progreso = Progreso.query.filter_by(
         id_estudiante=estudiante_id,
-        id_level=level.id
+        id_level=level_id
     ).first()
 
+    ejercicios_completados = progreso.puntaje // 25 if progreso else 0
+    total_ejercicios = 4
+
+    return {
+        'aprobado':              es_correcta,
+        'ejercicios_completados': ejercicios_completados,
+        'total_ejercicios':       total_ejercicios,
+        'nivel_completado':       progreso.completado if progreso else False,
+        'level_id':               level_id,
+        'ejercicio_index':        ejercicio_index,
+    }
+
+
+def _actualizar_progreso(estudiante_id, level_id, ejercicio_index):
+    # buscamos si ya existe un registro de progreso para este estudiante y nivel
+    progreso = Progreso.query.filter_by(
+        id_estudiante=estudiante_id,
+        id_level=level_id
+    ).first()
+
+    # si no existe lo creamos desde cero
     if not progreso:
         progreso = Progreso(
             id_estudiante=estudiante_id,
-            id_level=level.id,
+            id_level=level_id,
             completado=False,
             puntaje=0
         )
         db.session.add(progreso)
 
-    # 3. Incrementar puntaje (siempre correcto si llega aquí)
-    progreso.puntaje += 1
+    # cada ejercicio vale 25 puntos (4 ejercicios = 100 puntos)
+    puntos_por_ejercicio = 25
+    puntaje_nuevo = ejercicio_index * puntos_por_ejercicio
 
-    # 4. Verificar si el level se completó
-    total_preguntas = Pregunta.query.filter_by(id_level=level.id).count()
-    if progreso.puntaje >= total_preguntas:
+    # solo subimos el puntaje si este ejercicio supera el progreso actual
+    # esto evita que repetir ejercicios sume puntos de mas
+    if puntaje_nuevo > progreso.puntaje:
+        progreso.puntaje = puntaje_nuevo
+
+    # si llego a 100 puntos el nivel queda completado
+    if progreso.puntaje >= 100:
         progreso.completado = True
 
     db.session.commit()
-    return progreso
-
-### asegurarse de que tambien suba a la DB level una vez que todas las preguntas esten completas
