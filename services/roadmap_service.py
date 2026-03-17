@@ -4,10 +4,12 @@ from models import db, Level, Progreso
 # cuantas preguntas tiene cada nivel
 PREGUNTAS_POR_NIVEL = 4
 
+# comodines que tiene cada estudiante al inicio
+COMODINES_INICIALES = 3
+
 
 def _calcular_ejercicios(puntaje):
     # convierte el puntaje del nivel en una lista de True/False
-    # por cada pregunta respondida correctamente.
     # ejemplo: puntaje 50 con 4 preguntas = [True, True, False, False]
     if puntaje <= 0:
         return [False] * PREGUNTAS_POR_NIVEL
@@ -21,7 +23,6 @@ def _calcular_ejercicios(puntaje):
 
 def _calcular_estado(i, completado, niveles_db, estudiante_id):
     # decide si un nivel esta bloqueado, disponible o completado
-    # segun el progreso del nivel anterior
     if completado:
         return 'completado'
 
@@ -42,10 +43,7 @@ def _calcular_estado(i, completado, niveles_db, estudiante_id):
 
 
 def get_progreso(estudiante_id):
-    # devuelve la lista de niveles con el progreso del estudiante.
-    # cada nivel tiene: id, titulo, estado, puntaje, ejercicios, etc.
-
-    # traemos todos los niveles ordenados segun su orden en el roadmap
+    # devuelve la lista de niveles con el progreso del estudiante
     niveles_db = Level.query.order_by(Level.orden).all()
 
     resultado = []
@@ -57,12 +55,12 @@ def get_progreso(estudiante_id):
             id_level=nivel.id
         ).first()
 
-        # si no hay registro de progreso, el nivel no fue tocado
-        completado = progreso.completado if progreso else False
-        puntaje = progreso.puntaje if progreso else 0
+        # si no hay registro de progreso el nivel no fue tocado todavia
+        completado  = progreso.completado if progreso else False
+        puntaje     = progreso.puntaje    if progreso else 0
 
-        estado = _calcular_estado(i, completado, niveles_db, estudiante_id)
-        ejercicios = _calcular_ejercicios(puntaje)
+        estado      = _calcular_estado(i, completado, niveles_db, estudiante_id)
+        ejercicios  = _calcular_ejercicios(puntaje)
         completados = sum(ejercicios)
 
         resultado.append({
@@ -73,6 +71,56 @@ def get_progreso(estudiante_id):
             'ejercicios':  ejercicios,
             'completados': completados,
             'total':       PREGUNTAS_POR_NIVEL,
+            'conn_type':   None,
         })
 
     return resultado
+
+
+def get_comodines(estudiante_id):
+    # buscamos el primer registro de progreso del estudiante para leer sus comodines
+    progreso = Progreso.query.filter_by(id_estudiante=estudiante_id).first()
+
+    # si no tiene ningun progreso todavia tiene los comodines iniciales
+    if not progreso:
+        return COMODINES_INICIALES
+
+    return progreso.comodin
+
+
+def usar_comodin(estudiante_id):
+    # buscamos todos los registros de progreso del estudiante
+    progresos = Progreso.query.filter_by(id_estudiante=estudiante_id).all()
+
+    if not progresos:
+        # si no tiene progresos creamos uno en el primer nivel para guardar los comodines
+        primer_nivel = Level.query.order_by(Level.orden).first()
+        if not primer_nivel:
+            return {'ok': False, 'mensaje': 'no hay niveles disponibles'}
+
+        nuevo = Progreso(
+            id_estudiante=estudiante_id,
+            id_level=primer_nivel.id,
+            completado=False,
+            puntaje=0,
+            comodin=COMODINES_INICIALES
+        )
+        db.session.add(nuevo)
+        db.session.commit()
+        progresos = [nuevo]
+
+    # leemos cuantos comodines quedan del primer registro
+    comodines_restantes = progresos[0].comodin
+
+    if comodines_restantes <= 0:
+        return {'ok': False, 'comodines': 0, 'mensaje': 'no quedan comodines'}
+
+    # descontamos un comodin en todos los registros del estudiante
+    # para mantener consistencia entre niveles
+    nuevos_comodines = comodines_restantes - 1
+    for p in progresos:
+        p.comodin = nuevos_comodines
+
+    db.session.commit()
+
+    return {'ok': True, 'comodines': nuevos_comodines}
