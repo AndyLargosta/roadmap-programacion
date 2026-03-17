@@ -18,12 +18,12 @@ def _agregar_conectores(levels):
 
 @roadmap.route('/roadmap')
 def roadmap_view():
-    # chequeo de sesion comentado mientras oliver termina routes/auth.py
-    # if 'estudiante_id' not in session:
-    #     return redirect(url_for('auth.login'))
+    # si el usuario no inicio sesion lo mandamos al login
+    if 'user_id' not in session:
+        return redirect(url_for('auth.login'))
 
-    # id temporal para desarrollo mientras no hay login real
-    estudiante_id = session.get('estudiante_id', 1)
+    # user_id es el nombre que guarda auth.py en la sesion
+    estudiante_id = session.get('user_id')
 
     # pedimos el progreso del estudiante al service
     levels = roadmap_service.get_progreso(estudiante_id)
