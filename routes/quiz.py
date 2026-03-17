@@ -7,7 +7,11 @@ quiz = Blueprint('quiz', __name__)
 @quiz.route('/quiz/<int:level_id>/ejercicio/<int:ejercicio_id>', methods=['GET', 'POST'])
 def ejercicio_view(level_id, ejercicio_id):
     # Simulamos el ID del estudiante (igual que en tu roadmap.py)
-    estudiante_id = session.get('estudiante_id', 1)
+    estudiante_id = session.get('user_id')
+
+    # Opcional: Si por alguna razón no hay sesión, abortamos para que no explote
+    if not estudiante_id:
+        return redirect(url_for('auth.login'))
 
     # --- SI EL USUARIO ENTRA A VER LA PREGUNTA ---
     if request.method == 'GET':
