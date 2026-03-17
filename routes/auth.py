@@ -6,7 +6,7 @@ auth = Blueprint('auth', __name__)
 @auth.route('/login', methods=['GET', 'POST'])
 def login():
     if 'user_id' in session:
-        return redirect(url_for('roadmap.index')) 
+        return redirect(url_for('roadmap.roadmap_view')) 
 
     error = None
     email = ''
@@ -29,7 +29,7 @@ def login():
         session['user_email'] = user.email
         session['is_new'] = is_new
         session['nombre_usuario'] = user.email.split('@')[0]
-        return redirect(url_for('roadmap.index'))
+        return redirect(url_for('roadmap.roadmap_view'))
 
     return render_template('login.html', error=error, email=email)
 
