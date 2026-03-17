@@ -14,11 +14,19 @@ def get_pregunta(level_id, ejercicio_index):
     pregunta_db = preguntas[indice_real]
     alternativas = Alternativa.query.filter_by(id_preguntas=pregunta_db.id).all()
 
+    incorrectas = [alt for alt in alternativas if not alt.correcta]
+    correctas = [alt for alt in alternativas if alt.correcta]
+
+    comodines = random.sample(incorrectas, k=min(2, len(incorrectas)))
+    
     # formateamos las alternativas para pasarlas al template
-    opciones_formateadas = [
-        {'id': alt.id, 'texto': alt.alternativas}
-        for alt in alternativas
-    ]
+    opciones_formateadas = []
+    for alt in alternativas:
+        opciones_formateadas.append({
+            'id': alt.id,
+            'texto': alt.alternativas,
+            'comodin': alt in comodines  # True si estÃ¡ entre las 2 incorrectas elegidas
+        })
     random.shuffle(opciones_formateadas)
 
     return {
