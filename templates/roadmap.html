@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi Roadmap</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* posicion de cada nodo en el zigzag.
+           tailwind no soporta porcentajes arbitrarios en padding */
+        .step-1 { padding-left: 0%;  padding-right: 55%; }
+        .step-2 { padding-left: 25%; padding-right: 25%; }
+        .step-3 { padding-left: 55%; padding-right: 0%;  }
+        .step-4 { padding-left: 0%;  padding-right: 55%; }
+        .step-5 { padding-left: 25%; padding-right: 25%; }
+        .step-6 { padding-left: 55%; padding-right: 0%;  }
+        .step-7 { padding-left: 0%;  padding-right: 55%; }
+
+        /* el svg del conector ocupa todo el ancho y se pega a los nodos */
+        .conn-svg {
+            display: block;
+            width: 100%;
+            position: relative;
+            z-index: 1;
+            margin-top: -4px;
+            margin-bottom: -4px;
+        }
+
+        /* scrollbar invisible en reposo, aparece al hacer hover */
+        .col-roadmap::-webkit-scrollbar,
+        .col-dashboard::-webkit-scrollbar { width: 3px; }
+
+        .col-roadmap::-webkit-scrollbar-track,
+        .col-dashboard::-webkit-scrollbar-track { background: transparent; }
+
+        .col-roadmap::-webkit-scrollbar-thumb,
+        .col-dashboard::-webkit-scrollbar-thumb { background: transparent; }
+
+        .col-roadmap:hover::-webkit-scrollbar-thumb,
+        .col-dashboard:hover::-webkit-scrollbar-thumb {
+            background: #353760;
+            border-radius: 10px;
+        }
+    </style>
+</head>
+
+<body class="bg-[#1A1C38] min-h-screen overflow-hidden font-sans">
+<div class="flex h-screen w-full">
+
+    <div class="col-roadmap flex-1 overflow-y-auto overflow-x-hidden pb-16">
+        <div class="max-w-[900px] mx-auto px-8 py-8 text-center">
+
+            <h1 class="text-5xl font-black text-white mb-2">
+                Tu Roadmap de Programación
+            </h1>
+            <p class="text-[#F4B942] text-lg mb-8 opacity-85">
+                Completá los 4 ejercicios de cada nivel para desbloquear el siguiente.
+            </p>
+
+            <div class="flex flex-col w-full">
+
+            {% for level in levels %}
+
+                <div class="step step-{{ loop.index }} flex flex-col items-center w-full">
+                    <div class="w-[200px] h-[200px] rounded-full flex flex-col items-center
+                                justify-center text-center relative z-10
+                        {% if level.estado == 'bloqueado' %}
+                            bg-[#252848] text-[#5C5F82] border-[3px] border-[#353760] opacity-60
+                        {% elif level.estado == 'disponible' %}
+                            bg-[#252848] text-white border-[3px] border-[#F4B942]
+                            shadow-[0_0_20px_rgba(244,185,66,0.45)]
+                        {% else %}
+                            bg-[#F4B942] text-[#252848] border-[3px] border-[#D9A030]
+                            shadow-[0_4px_16px_rgba(244,185,66,0.4)]
+                        {% endif %}">
+
+                        <span class="text-5xl font-black leading-none">{{ loop.index }}</span>
+                        <span class="text-base font-bold mt-1 leading-tight">{{ level.titulo }}</span>
+
+                        {% if level.estado == 'completado' %}
+                            <span class="text-sm font-bold mt-1">✓ 100%</span>
+                        {% elif level.estado == 'disponible' %}
+                            <span class="text-sm mt-1 text-[#F4B942]">
+                                {{ level.completados }}/{{ level.total }}
+                            </span>
+                        {% else %}
+                            <span class="text-2xl mt-1">🔒</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if level.conn_type %}
+
+                {% if level.conn_type == 'A' %}
+                    {% set x1=22.5 %} {% set x2=50 %}
+                    {% set pts = [(28.0,6),(33.5,12),(39.0,18),(44.5,24)] %}
+                {% elif level.conn_type == 'B' %}
+                    {% set x1=50 %} {% set x2=77.5 %}
+                    {% set pts = [(55.5,6),(61.0,12),(66.5,18),(72.0,24)] %}
+                {% else %}
+                    {% set x1=77.5 %} {% set x2=22.5 %}
+                    {% set pts = [(66.5,6),(55.5,12),(44.5,18),(33.5,24)] %}
+                {% endif %}
+
+                <svg class="conn-svg"
+                     viewBox="0 0 100 30"
+                     xmlns="http://www.w3.org/2000/svg"
+                     preserveAspectRatio="none">
+
+                    <line x1="{{ x1 }}" y1="0"
+                          x2="{{ x2 }}" y2="30"
+                          stroke="#353760"
+                          stroke-width="1.2"
+                          stroke-dasharray="2.5 1.8"/>
+
+                    {% for px, py in pts %}
+                        {% set i = loop.index0 %}
+
+                        {% if level.estado == 'bloqueado' %}
+                            {% set fc="#252848" %} {% set sc="#353760" %} {% set tc="#5C5F82" %}
+                            {% set label = loop.index|string %}
+                        {% elif level.ejercicios[i] %}
+                            {% set fc="#F4B942" %} {% set sc="#D9A030" %} {% set tc="#252848" %}
+                            {% set label = "✓" %}
+                        {% else %}
+                            {% set fc="#252848" %} {% set sc="#F4B942" %} {% set tc="#F4B942" %}
+                            {% set label = loop.index|string %}
+                        {% endif %}
+
+                        {% if level.estado != 'bloqueado' %}
+                            <g onclick="abrirModalQuiz('/quiz/{{ level.id }}/ejercicio/{{ loop.index }}')" 
+                               style="cursor:pointer;" 
+                               class="hover:opacity-75 transition-opacity" style="transform-origin: {{ px }}px {{ py }}px;">
+                        {% else %}
+                            <g>
+                        {% endif %}
+
+                            <circle cx="{{ px }}" cy="{{ py }}" r="3.4"
+                                    fill="{{ fc }}"
+                                    stroke="{{ sc }}"
+                                    stroke-width="0.8" />
+
+                            <text x="{{ px }}" y="{{ py + 1.2 }}"
+                                  text-anchor="middle"
+                                  dominant-baseline="middle"
+                                  font-size="3"
+                                  font-weight="700"
+                                  fill="{{ tc }}">{{ label }}</text>
+
+                        </g>
+
+                    {% endfor %}
+
+                </svg>
+                {% endif %}
+
+            {% endfor %}
+
+            {% set completados_total = levels | selectattr('estado', 'equalto', 'completado')
+                                              | list | length %}
+            {% set todos_completados = completados_total == levels | list | length %}
+
+            <div class="step step-7 flex flex-col items-center w-full">
+                <div class="w-[200px] h-[200px] rounded-full flex flex-col items-center
+                            justify-center text-center relative z-10 transition-transform duration-200
+                    {% if todos_completados %}
+                        bg-[#F4B942] text-[#252848] border-[3px] border-[#D9A030]
+                        shadow-[0_4px_24px_rgba(244,185,66,0.6)] cursor-pointer hover:scale-105
+                    {% else %}
+                        bg-[#252848] text-[#5C5F82] border-[3px] border-dashed border-[#353760] opacity-50
+                    {% endif %}">
+
+                    <span class="text-5xl leading-none">🏆</span>
+                    <span class="text-base font-bold mt-2 leading-tight">Completado</span>
+
+                    {% if todos_completados %}
+                        <span class="text-sm font-bold mt-1">¡Felicitaciones!</span>
+                    {% else %}
+                        <span class="text-2xl mt-1">🔒</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+    <aside class="col-dashboard w-[220px] min-w-[200px] bg-[#20234A] border-2 border-[#F4B942]
+                  rounded-2xl overflow-y-auto p-4 flex flex-col gap-3 m-3 ml-0">
+
+        <div class="bg-[#252848] rounded-2xl border border-[#353760] p-4
+                    flex flex-col items-center gap-2">
+            <div class="w-16 h-16 rounded-full bg-[#1A1C38] border-2 border-[#F4B942]
+                        flex items-center justify-center">
+                <span class="text-3xl font-black text-[#F4B942]">
+                    {{ session.get('nombre_usuario', 'E')[0] | upper }}
+                </span>
+            </div>
+            <span class="text-white text-base font-bold text-center">
+                {{ session.get('nombre_usuario', 'Estudiante') }}
+            </span>
+            <span class="bg-[#F4B942] text-[#252848] text-xs font-bold
+                         px-4 py-0.5 rounded-full">
+                Nivel {{ session.get('nivel', 1) }}
+            </span>
+        </div>
+
+        <div class="bg-[#252848] rounded-2xl border border-[#353760] p-4 flex flex-col gap-2">
+            <span class="text-[#8B8FB5] text-[10px] font-bold uppercase tracking-widest">
+                Progreso total
+            </span>
+
+            {% set completados_total = levels | selectattr('estado', 'equalto', 'completado')
+                                              | list | length %}
+            {% set total_niveles = levels | list | length %}
+            {% set pct = ((completados_total / total_niveles) * 100) | int
+                         if total_niveles > 0 else 0 %}
+
+            <div class="w-full h-1.5 bg-[#353760] rounded-full overflow-hidden">
+                <div class="h-full bg-[#F4B942] rounded-full transition-all duration-500"
+                     style="width: {{ pct }}%; min-width: 4px;"></div>
+            </div>
+            <span class="text-[#8B8FB5] text-xs self-end">
+                {{ completados_total }}/{{ total_niveles }} niveles
+            </span>
+        </div>
+
+        <div class="bg-[#252848] rounded-2xl border border-[#353760] p-4
+                    flex flex-col items-center gap-3">
+            <span class="text-[#8B8FB5] text-[10px] font-bold uppercase tracking-widest self-start">
+                Comodines — pistas
+            </span>
+            <div class="flex flex-wrap gap-2 justify-center">
+                {% for _ in range(5) %}
+                <button class="w-11 h-11 rounded-xl bg-[#1A1C38] border-2 border-[#F4B942]
+                               text-xl flex items-center justify-center
+                               transition-all duration-150 hover:scale-110 hover:bg-[#F4B942]">
+                    💡
+                </button>
+                {% endfor %}
+            </div>
+            <span class="text-[#8B8FB5] text-xs self-end">5 comodines disponibles</span>
+        </div>
+
+        <div class="bg-[#252848] rounded-2xl border border-[#353760] p-4 flex flex-col gap-2">
+            <span class="text-[#8B8FB5] text-[10px] font-bold uppercase tracking-widest mb-1">
+                Niveles completados
+            </span>
+
+            {% for level in levels %}
+            <div class="flex items-center gap-2">
+
+                <span class="w-2 h-2 rounded-full flex-shrink-0
+                    {% if level.estado == 'completado' %}bg-[#F4B942]
+                    {% elif level.estado == 'disponible' %}bg-white border border-[#F4B942]
+                    {% else %}bg-[#353760]{% endif %}">
+                </span>
+
+                <span class="flex-1 text-white text-[11px] font-medium">
+                    {{ level.titulo }}
+                </span>
+
+                {% if level.estado == 'completado' %}
+                    <span class="text-[#F4B942] text-xs font-bold">✓</span>
+                {% elif level.estado == 'disponible' %}
+                    <span class="text-[#F4B942] text-xs font-bold">
+                        {{ level.completados }}/4
+                    </span>
+                {% else %}
+                    <span class="text-[#5C5F82] text-xs">🔒</span>
+                {% endif %}
+
+            </div>
+            {% endfor %}
+
+        </div>
+
+    </aside>
+
+</div>
+
+<div id="quiz-modal" class="fixed inset-0 bg-[#000000cc] backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div id="quiz-modal-content" class="w-full max-w-2xl">
+        </div>
+</div>
+
+<script>
+    const modal = document.getElementById('quiz-modal');
+    const modalContent = document.getElementById('quiz-modal-content');
+
+    // Función para abrir el modal y traer la pregunta
+    async function abrirModalQuiz(url) {
+        // Quitamos hidden y agregamos flex para centrarlo
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        
+        modalContent.innerHTML = '<div class="text-[#F4B942] text-center text-2xl font-black animate-pulse">Cargando ejercicio...</div>';
+
+        try {
+            // Hacemos la petición GET a Flask
+            const response = await fetch(url);
+            const html = await response.text();
+            
+            // Metemos el HTML de la pregunta en el modal
+            modalContent.innerHTML = html;
+
+            // Buscamos el formulario recién inyectado para "secuestrar" el botón Enviar
+            const form = modalContent.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault(); // Evitamos que la página recargue
+                    
+                    // Tomamos los datos del form y hacemos un POST a Flask
+                    const formData = new FormData(form);
+                    const postResponse = await fetch(url, {
+                        method: 'POST',
+                        body: formData
+                    });
+                    
+                    // Recibimos el HTML de resultado.html y lo inyectamos
+                    const resultHtml = await postResponse.text();
+                    modalContent.innerHTML = resultHtml;
+                });
+            }
+        } catch (error) {
+            modalContent.innerHTML = '<div class="text-white text-center font-bold">Hubo un error al cargar el ejercicio.</div>';
+        }
+    }
+
+    // Función para cerrar el modal y recargar la página (para ver el progreso actualizado)
+    function cerrarModal() {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        window.location.reload(); 
+    }
+</script>
+</body>
+</html>

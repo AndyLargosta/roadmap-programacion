@@ -1,0 +1,82 @@
+<div class="modal-overlay" id="quiz-modal">
+    <div class="modal-content">
+        <span class="cerrar-modal" onclick="cerrarModal('quiz-modal')">&times;</span>
+        
+        <h2>Cuestionario</h2>
+        
+        <form id="quiz-form" action="{{ url_for('quiz.enviar_quiz', pregunta_id=pregunta.id) }}" method="POST">
+            
+            <div class="pregunta-bloque" data-correcta="{{ pregunta.correcta_id }}">
+                <p class="texto-pregunta"><strong>{{ pregunta.texto }}</strong></p>
+                
+                <div class="opciones-container">
+                    {% for alt in pregunta.alternativas %}
+                        <label class="opcion-label">
+                            <input type="radio" name="alternativa" value="{{ alt.id }}" required>
+                            {{ alt.alternativas }}
+                        </label>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <button type="submit" class="btn-enviar">Comprobar Respuesta</button>
+        </form>
+    </div>
+</div>
+
+<style>
+
+.modal-overlay {
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    display: flex; justify-content: center; align-items: center;
+    z-index: 1000;
+}
+.modal-content {
+    background: white; padding: 25px; border-radius: 12px;
+    max-width: 500px; width: 90%; position: relative;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+    font-family: sans-serif;
+}
+.cerrar-modal {
+    position: absolute; top: 10px; right: 15px;
+    font-size: 24px; cursor: pointer; color: #aaa;
+}
+.cerrar-modal:hover { color: #333; }
+.texto-pregunta { font-size: 18px; margin-bottom: 20px; }
+.opciones-container { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
+.opcion-label {
+    display: block; padding: 10px 15px; border: 1px solid #ddd;
+    border-radius: 8px; cursor: pointer; transition: background 0.2s;
+}
+.opcion-label:hover { background: #f9f9f9; }
+.btn-enviar {
+    width: 100%; padding: 12px; border: none; border-radius: 8px;
+    background: #007bff; color: white; font-size: 16px; font-weight: bold;
+    cursor: pointer; transition: background 0.2s;
+}
+.btn-enviar:hover { background: #0056b3; }
+</style>
+
+<script>
+document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+        let bloque = this.closest('.pregunta-bloque');
+        let respuestaCorrecta = bloque.getAttribute('data-correcta');
+        let labels = bloque.querySelectorAll('.opcion-label');
+        
+        labels.forEach(l => {
+            l.style.backgroundColor = 'transparent';
+            l.style.borderColor = '#ddd';
+        });
+        
+        if (this.value === respuestaCorrecta) {
+            this.parentElement.style.backgroundColor = '#d4edda';
+            this.parentElement.style.borderColor = '#c3e6cb';
+        } else {
+            this.parentElement.style.backgroundColor = '#f8d7da';
+            this.parentElement.style.borderColor = '#f5c6cb';
+        }
+    });
+});
+</script>
