@@ -1,4 +1,4 @@
-from models import db, Estudiante
+from models import db, Estudiante, Progreso
 from werkzeug.security import generate_password_hash, check_password_hash
 
 def check_or_create_user(email, password):
@@ -26,6 +26,17 @@ def check_or_create_user(email, password):
         
         db.session.add(new_user)
         db.session.commit()
+        # agregamos a la tabla Progreso el nuevo estudiante
+        progreso = Progreso(
+            id_estudiante=new_user.id,
+            id_level=1,
+            completado=False,
+            puntaje=0,
+            comodin=3
+        )
+        db.session.add(progreso)
+        db.session.commit()
+
         return new_user, True
         
     except Exception as e:
