@@ -1,5 +1,6 @@
 from models import db, Estudiante, Progreso
 from werkzeug.security import generate_password_hash, check_password_hash
+import re
 
 def check_or_create_user(email, password):
     """
@@ -50,3 +51,8 @@ def check_or_create_user(email, password):
 def email_exists(email):
     #Verifica la existencia del email para el aviso dinámico en el frontend.
     return Estudiante.query.filter_by(email=email).first() is not None
+
+# verificar si el email es valido mediante regex
+def valid_email(email):                                         
+    patron = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$' 
+    return bool(re.match(patron, email))    

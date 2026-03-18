@@ -1,5 +1,5 @@
 from flask import Blueprint, render_template, request, redirect, url_for, session, jsonify
-from services.auth_service import check_or_create_user, email_exists
+from services.auth_service import check_or_create_user, email_exists, valid_email
 
 auth = Blueprint('auth', __name__)
 
@@ -17,6 +17,11 @@ def login():
 
         if not email or not password:
             error = 'Por favor completá todos los campos.'
+            return render_template('login.html', error=error, email=email)
+        
+        # validacion y mensaje de error si email es invalido
+        if not valid_email(email):
+            error = 'El email ingresado no es válido.'
             return render_template('login.html', error=error, email=email)
 
         user, is_new = check_or_create_user(email, password)
