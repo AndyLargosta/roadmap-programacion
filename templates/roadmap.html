@@ -273,11 +273,11 @@
             <div class="flex gap-2 justify-center" id="comodines-container">
                 {% for i in range(3) %}
                 <button
+
                     id="comodin-{{ i }}"
-                    onclick="usarComodin({{ i }})"
                     class="comodin-btn w-10 h-10 rounded-lg bg-[#1A1C38] border-2 border-[#F4B942]
                            text-lg flex items-center justify-center
-                           transition-all duration-150 hover:scale-110 hover:bg-[#F4B942]
+                           cursor-default
                            {% if i >= comodines %}comodin-usado{% endif %}"
                     {% if i >= comodines %}disabled{% endif %}>
                     💡
