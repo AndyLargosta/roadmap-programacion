@@ -52,13 +52,77 @@
         background: #353760;
         border-radius: 10px;
     }
+
+    /* ── fondo con puntos igual al login ── */
+    .roadmap-bg::before {
+        content: '';
+        position: fixed; inset: 0;
+        background-image: radial-gradient(circle, rgba(244,185,66,.15) 1px, transparent 1px);
+        background-size: 36px 36px;
+        opacity: .5;
+        pointer-events: none;
+        z-index: 0;
+    }
+    .roadmap-bg::after {
+        content: '';
+        position: fixed;
+        bottom: -150px; right: -100px;
+        width: 500px; height: 500px;
+        background: radial-gradient(ellipse at center, rgba(244,185,66,.10) 0%, transparent 70%);
+        pointer-events: none;
+        z-index: 0;
+    }
+
+    /* ── nubes igual al login ── */
+    .clouds {
+        position: fixed;
+        top: 8%; left: 0; right: 0;
+        height: 70px;
+        pointer-events: none;
+        z-index: 1;
+    }
+    .cloud {
+        position: absolute;
+        background: rgba(255,255,255,.10);
+        border-radius: 50px;
+        animation: drift linear infinite;
+    }
+    .cloud::before, .cloud::after {
+        content: '';
+        position: absolute;
+        background: rgba(255,255,255,.10);
+        border-radius: 50%;
+    }
+    .c1 { width:80px;  height:24px; top:10px; animation-duration:38s; animation-delay:-5s;  }
+    .c1::before { width:40px; height:34px; top:-16px; left:12px; }
+    .c1::after  { width:30px; height:24px; top:-11px; left:38px; }
+    .c2 { width:55px;  height:18px; top:35px; animation-duration:52s; animation-delay:-20s; }
+    .c2::before { width:28px; height:24px; top:-11px; left:9px;  }
+    .c3 { width:100px; height:28px; top:5px;  animation-duration:45s; animation-delay:-12s; }
+    .c3::before { width:50px; height:40px; top:-20px; left:14px; }
+    .c3::after  { width:36px; height:28px; top:-14px; left:50px; }
+    .c4 { width:70px;  height:20px; top:45px; animation-duration:60s; animation-delay:-32s; }
+    .c4::before { width:36px; height:30px; top:-14px; left:10px; }
+
+    @keyframes drift {
+        from { left: -130px; }
+        to   { left: 110%;   }
+    }
 </style>
 
-<div class="bg-[#1A1C38] min-h-screen font-sans">
+<!-- nubes animadas -->
+<div class="clouds">
+    <div class="cloud c1" style="left:3%"></div>
+    <div class="cloud c2" style="left:28%"></div>
+    <div class="cloud c3" style="left:62%"></div>
+    <div class="cloud c4" style="left:82%"></div>
+</div>
+
+<div class="roadmap-bg bg-[#1A1C38] min-h-screen font-sans">
 <div class="flex h-screen w-full overflow-hidden">
 
     <!-- columna izquierda: roadmap con scroll -->
-    <div class="col-roadmap flex-1 overflow-y-auto overflow-x-hidden pb-48">
+    <div class="col-roadmap flex-1 overflow-y-auto overflow-x-hidden pb-48" style="position:relative; z-index:2;">
         <div class="w-full max-w-[900px] mx-auto px-4 sm:px-8 py-8 text-center">
 
             <h1 class="text-3xl sm:text-5xl font-black text-white mb-2">
@@ -207,7 +271,8 @@
     <!-- dashboard desktop -->
     <aside class="col-dashboard hidden sm:flex w-[22%] min-w-[180px] max-w-[240px]
                   bg-[#20234A] border-2 border-[#F4B942] rounded-2xl
-                  flex-col gap-2 mx-3 my-3 ml-0 p-3 h-fit self-start">
+                  flex-col gap-2 mx-3 my-3 ml-0 p-3 h-fit self-start"
+           style="position:relative; z-index:2;">
 
         <!-- perfil -->
         <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
@@ -298,8 +363,9 @@
     </aside>
 
 </div>
+</div>
 
-<!-- boton flotante mobile: bajado para no superponerse con el titulo -->
+<!-- boton flotante mobile -->
 <button onclick="toggleDashboard()"
         class="sm:hidden fixed top-44 right-4 z-40 w-12 h-12 rounded-full
                bg-[#F4B942] text-[#252848] text-xl font-black
@@ -308,7 +374,7 @@
     📊
 </button>
 
-<!-- dashboard mobile: panel flotante, oculto por defecto -->
+<!-- dashboard mobile -->
 <div id="mobile-dashboard"
      class="sm:hidden fixed top-60 right-4 z-40 w-64
             bg-[#20234A] border-2 border-[#F4B942] rounded-2xl
@@ -351,7 +417,7 @@
         </span>
     </div>
 
-    <!-- comodines mobile: solo visual, refleja estado de la bd -->
+    <!-- comodines mobile -->
     <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
                 flex flex-col items-center gap-2">
         <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest self-start">
@@ -400,8 +466,6 @@
 
 </div>
 
-</div>
-
 <!-- modal del quiz -->
 <div id="quiz-modal"
      class="fixed inset-0 bg-[#000000cc] backdrop-blur-sm z-50 hidden items-center justify-center p-4">
@@ -412,7 +476,6 @@
     const modal = document.getElementById('quiz-modal');
     const modalContent = document.getElementById('quiz-modal-content');
 
-    // abre el modal y carga la pregunta desde flask
     async function abrirModalQuiz(url) {
         modal.classList.remove('hidden');
         modal.classList.add('flex');
@@ -423,7 +486,6 @@
             const html = await response.text();
             modalContent.innerHTML = html;
 
-            // intercepta el submit para no recargar la pagina
             const form = modalContent.querySelector('form');
             if (form) {
                 form.addEventListener('submit', async (e) => {
@@ -439,14 +501,12 @@
         }
     }
 
-    // cierra el modal y recarga para mostrar el progreso actualizado
     function cerrarModal() {
         modal.classList.remove('flex');
         modal.classList.add('hidden');
         window.location.reload();
     }
 
-    // muestra u oculta el dashboard flotante en mobile
     function toggleDashboard() {
         const dash = document.getElementById('mobile-dashboard');
         if (dash.classList.contains('hidden')) {
