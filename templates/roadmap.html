@@ -52,25 +52,13 @@
         background: #353760;
         border-radius: 10px;
     }
-
-    /* estilo del comodin usado */
-    .comodin-usado {
-        opacity: 0.3;
-        cursor: not-allowed !important;
-        border-color: #353760 !important;
-        background-color: #1A1C38 !important;
-    }
-    .comodin-usado:hover {
-        transform: none !important;
-        background-color: #1A1C38 !important;
-    }
 </style>
 
 <div class="bg-[#1A1C38] min-h-screen font-sans">
 <div class="flex h-screen w-full overflow-hidden">
 
     <!-- columna izquierda: roadmap con scroll -->
-    <div class="col-roadmap flex-1 overflow-y-auto overflow-x-hidden pb-16">
+    <div class="col-roadmap flex-1 overflow-y-auto overflow-x-hidden pb-48">
         <div class="w-full max-w-[900px] mx-auto px-4 sm:px-8 py-8 text-center">
 
             <h1 class="text-3xl sm:text-5xl font-black text-white mb-2">
@@ -140,10 +128,6 @@
                     {% for px, py in pts %}
                         {% set i = loop.index0 %}
 
-                        {# un ejercicio es clickeable si:
-                           - el nivel no esta bloqueado
-                           - el ejercicio anterior fue completado (i == 0 siempre disponible)
-                           - o el ejercicio ya fue completado (se puede revisar) #}
                         {% set ejercicio_anterior_ok = (i == 0) or level.ejercicios[i - 1] %}
                         {% set es_clickeable = level.estado != 'bloqueado' and ejercicio_anterior_ok %}
 
@@ -154,11 +138,9 @@
                             {% set fc="#F4B942" %} {% set sc="#D9A030" %} {% set tc="#252848" %}
                             {% set label = "✓" %}
                         {% elif es_clickeable %}
-                            {# ejercicio disponible: siguiente al ultimo completado #}
                             {% set fc="#252848" %} {% set sc="#F4B942" %} {% set tc="#F4B942" %}
                             {% set label = loop.index|string %}
                         {% else %}
-                            {# ejercicio bloqueado dentro del nivel: gris como el nivel bloqueado #}
                             {% set fc="#1E1C38" %} {% set sc="#353760" %} {% set tc="#5C5F82" %}
                             {% set label = loop.index|string %}
                         {% endif %}
@@ -264,27 +246,23 @@
             </span>
         </div>
 
-        <!-- comodines -->
+        <!-- comodines: solo visual, refleja estado de la bd -->
         <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
                     flex flex-col items-center gap-2">
             <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest self-start">
                 Comodines — pistas
             </span>
-            <div class="flex gap-2 justify-center" id="comodines-container">
+            <div class="flex gap-2 justify-center">
                 {% for i in range(3) %}
-                <button
-
-                    id="comodin-{{ i }}"
-                    class="comodin-btn w-10 h-10 rounded-lg bg-[#1A1C38] border-2 border-[#F4B942]
-                           text-lg flex items-center justify-center
-                           cursor-default
-                           {% if i >= comodines %}comodin-usado{% endif %}"
-                    {% if i >= comodines %}disabled{% endif %}>
+                <div class="w-10 h-10 rounded-lg bg-[#1A1C38] border-2
+                            {% if i < comodines %}border-[#F4B942] text-xl
+                            {% else %}border-[#353760] opacity-30{% endif %}
+                            flex items-center justify-center">
                     💡
-                </button>
+                </div>
                 {% endfor %}
             </div>
-            <span class="text-[#8B8FB5] text-[10px] self-end" id="comodines-label">
+            <span class="text-[#8B8FB5] text-[10px] self-end">
                 {{ comodines }} comodines disponibles
             </span>
         </div>
@@ -321,18 +299,18 @@
 
 </div>
 
-<!-- boton flotante mobile -->
+<!-- boton flotante mobile: bajado para no superponerse con el titulo -->
 <button onclick="toggleDashboard()"
-        class="sm:hidden fixed top-28 right-4 z-40 w-12 h-12 rounded-full
+        class="sm:hidden fixed top-44 right-4 z-40 w-12 h-12 rounded-full
                bg-[#F4B942] text-[#252848] text-xl font-black
                flex items-center justify-center
                shadow-[0_4px_16px_rgba(244,185,66,0.5)]">
     📊
 </button>
 
-<!-- dashboard mobile -->
+<!-- dashboard mobile: panel flotante, oculto por defecto -->
 <div id="mobile-dashboard"
-     class="sm:hidden fixed top-44 right-4 z-40 w-64
+     class="sm:hidden fixed top-60 right-4 z-40 w-64
             bg-[#20234A] border-2 border-[#F4B942] rounded-2xl
             flex-col gap-2 p-3 hidden
             shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
@@ -373,27 +351,23 @@
         </span>
     </div>
 
-    <!-- comodines mobile -->
+    <!-- comodines mobile: solo visual, refleja estado de la bd -->
     <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
                 flex flex-col items-center gap-2">
         <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest self-start">
             Comodines — pistas
         </span>
-        <div class="flex gap-2 justify-center" id="comodines-container-mob">
+        <div class="flex gap-2 justify-center">
             {% for i in range(3) %}
-            <button
-                id="comodin-mob-{{ i }}"
-                onclick="usarComodin({{ i }})"
-                class="comodin-btn w-10 h-10 rounded-lg bg-[#1A1C38] border-2 border-[#F4B942]
-                       text-lg flex items-center justify-center
-                       transition-all duration-150 hover:scale-110 hover:bg-[#F4B942]
-                       {% if i >= comodines %}comodin-usado{% endif %}"
-                {% if i >= comodines %}disabled{% endif %}>
+            <div class="w-10 h-10 rounded-lg bg-[#1A1C38] border-2
+                        {% if i < comodines %}border-[#F4B942] text-xl
+                        {% else %}border-[#353760] opacity-30{% endif %}
+                        flex items-center justify-center">
                 💡
-            </button>
+            </div>
             {% endfor %}
         </div>
-        <span class="text-[#8B8FB5] text-[10px] self-end" id="comodines-label-mob">
+        <span class="text-[#8B8FB5] text-[10px] self-end">
             {{ comodines }} comodines disponibles
         </span>
     </div>
@@ -437,47 +411,42 @@
 <script>
     const modal = document.getElementById('quiz-modal');
     const modalContent = document.getElementById('quiz-modal-content');
-    let comodinesRestantes = {{ comodines }};
 
+    // abre el modal y carga la pregunta desde flask
     async function abrirModalQuiz(url) {
-    modal.classList.remove('hidden');
-    modal.classList.add('flex');
-    modalContent.innerHTML = '<div class="text-[#F4B942] text-center text-2xl font-black animate-pulse">Cargando ejercicio...</div>';
+        modal.classList.remove('hidden');
+        modal.classList.add('flex');
+        modalContent.innerHTML = '<div class="text-[#F4B942] text-center text-2xl font-black animate-pulse">Cargando ejercicio...</div>';
 
-    try {
-        const response = await fetch(url);
-        const html = await response.text();
-        modalContent.innerHTML = html;
+        try {
+            const response = await fetch(url);
+            const html = await response.text();
+            modalContent.innerHTML = html;
 
-        // 👇 ejecuta los scripts que vienen dentro del HTML cargado
-        modalContent.querySelectorAll('script').forEach(oldScript => {
-            const newScript = document.createElement('script');
-            newScript.textContent = oldScript.textContent;
-            document.body.appendChild(newScript);
-            document.body.removeChild(newScript);
-        });
-
-        const form = modalContent.querySelector('form');
-        if (form) {
-            form.addEventListener('submit', async (e) => {
-                e.preventDefault();
-                const formData = new FormData(form);
-                const postResponse = await fetch(url, { method: 'POST', body: formData });
-                const resultHtml = await postResponse.text();
-                modalContent.innerHTML = resultHtml;
-            });
+            // intercepta el submit para no recargar la pagina
+            const form = modalContent.querySelector('form');
+            if (form) {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
+                    const formData = new FormData(form);
+                    const postResponse = await fetch(url, { method: 'POST', body: formData });
+                    const resultHtml = await postResponse.text();
+                    modalContent.innerHTML = resultHtml;
+                });
+            }
+        } catch (error) {
+            modalContent.innerHTML = '<div class="text-white text-center font-bold">Hubo un error al cargar el ejercicio.</div>';
         }
-    } catch (error) {
-        modalContent.innerHTML = '<div class="text-white text-center font-bold">Hubo un error al cargar el ejercicio.</div>';
     }
-}
 
+    // cierra el modal y recarga para mostrar el progreso actualizado
     function cerrarModal() {
         modal.classList.remove('flex');
         modal.classList.add('hidden');
         window.location.reload();
     }
 
+    // muestra u oculta el dashboard flotante en mobile
     function toggleDashboard() {
         const dash = document.getElementById('mobile-dashboard');
         if (dash.classList.contains('hidden')) {
@@ -487,40 +456,6 @@
             dash.classList.remove('flex');
             dash.classList.add('hidden');
         }
-    }
-
-    async function usarComodin(indice) {
-        if (comodinesRestantes <= 0) return;
-
-        try {
-            const response = await fetch('/roadmap/usar-comodin', { method: 'POST' });
-            const data = await response.json();
-            if (!data.ok) return;
-
-            comodinesRestantes = data.comodines;
-            _actualizarVistaComodines();
-        } catch (error) {
-            console.error('error al usar comodin:', error);
-        }
-    }
-
-    function _actualizarVistaComodines() {
-        for (let i = 0; i < 3; i++) {
-            const btn    = document.getElementById('comodin-' + i);
-            const btnMob = document.getElementById('comodin-mob-' + i);
-            if (i >= comodinesRestantes) {
-                [btn, btnMob].forEach(b => {
-                    if (!b) return;
-                    b.classList.add('comodin-usado');
-                    b.disabled = true;
-                });
-            }
-        }
-        const texto = comodinesRestantes + ' comodines disponibles';
-        const label    = document.getElementById('comodines-label');
-        const labelMob = document.getElementById('comodines-label-mob');
-        if (label)    label.textContent    = texto;
-        if (labelMob) labelMob.textContent = texto;
     }
 </script>
 
