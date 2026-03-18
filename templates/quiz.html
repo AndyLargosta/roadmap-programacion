@@ -36,7 +36,7 @@
         </label>
         {% endfor %}
 
-        <button type="submit" 
+        <button onclick="reproducirSonido()" type="submit" 
                 class="mt-6 w-full py-4 bg-[#F4B942] hover:bg-[#D9A030] text-[#252848] font-black rounded-xl text-lg transition-all shadow-[0_4px_16px_rgba(244,185,66,0.3)] hover:scale-[1.02]">
             Enviar Respuesta
         </button>
@@ -47,6 +47,7 @@
     const levelId = {{ level_id }};
 
 function activarComodin() {
+    reproducirSonido();
     const btn = document.getElementById('btn-comodin');
     btn.disabled = true;  // deshabilitar el boton de comodin tras click
     btn.classList.add('opacity-40', 'cursor-not-allowed');
@@ -72,4 +73,16 @@ function activarComodin() {
         }
     });
 }
+
+    function reproducirHover() {
+        const sonido = new Audio('/static/sounds/hover.mp3');
+        sonido.play();
+    }
+    function reproducirSonido() {
+        const sonido = new Audio('/static/sounds/click.mp3');
+        sonido.play();
+    }
+        document.querySelectorAll('.opcion').forEach(opcion => {
+        opcion.addEventListener('mouseenter', reproducirHover);
+    });
 </script>
