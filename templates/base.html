@@ -145,8 +145,8 @@
 
             <p class="text-gray-500 text-xs sm:text-sm font-medium">
                 Hackathon 2026 —
-                <span class="text-white">Herramienta creada para aprender a programar —</span>
-                <span class="text-penguin-pink font-bold">Creada por "El mejor grupo"</span>
+                <span class="text-gray-500">Herramienta creada para aprender a programar —</span>
+                <span class="text-gray-500">Creada por "Grupo 1: Mejor grupo"</span>
             </p>
 
         </div>
@@ -156,6 +156,11 @@
 
 <script>
     function activarComodin() {
+        // descuenta el comodin en la bd
+        fetch('/roadmap/usar-comodin', { method: 'POST' })
+            .catch(err => console.error('error al usar comodin:', err));
+
+        // elimina visualmente las opciones incorrectas del quiz
         const opciones = document.querySelectorAll(".opcion");
         opciones.forEach(opcion => {
             if (opcion.dataset.comodin === "true") {
