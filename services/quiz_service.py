@@ -101,3 +101,36 @@ def _actualizar_progreso(estudiante_id, level_id, ejercicio_index):
         progreso.completado = True
 
     db.session.commit()
+
+def get_comodines(estudiante_id, level_id):
+    progreso = Progreso.query.filter_by(
+        id_estudiante=estudiante_id,
+        id_level=level_id
+    ).first()
+    return progreso.comodin if progreso else 3
+
+def usar_comodin(estudiante_id, level_id):
+    progreso = Progreso.query.filter_by(
+        id_estudiante=estudiante_id,
+        id_level=level_id
+    ).first()
+
+    # si no existe lo creamos con 3 comodines
+    if not progreso:
+        progreso = Progreso(
+            id_estudiante=estudiante_id,
+            id_level=level_id,
+            completado=False,
+            puntaje=0,
+            comodin=3
+        )
+        db.session.add(progreso)
+        db.session.commit()
+
+    if progreso.comodin <= 0:
+        return {'success': False, 'comodines_restantes': 0}
+
+    progreso.comodin -= 1
+    db.session.commit()
+
+    return {'success': True, 'comodines_restantes': progreso.comodin}
