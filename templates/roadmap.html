@@ -476,30 +476,38 @@
     const modal = document.getElementById('quiz-modal');
     const modalContent = document.getElementById('quiz-modal-content');
 
-    async function abrirModalQuiz(url) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-        modalContent.innerHTML = '<div class="text-[#F4B942] text-center text-2xl font-black animate-pulse">Cargando ejercicio...</div>';
+async function abrirModalQuiz(url) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    modalContent.innerHTML = '<div class="text-[#F4B942] text-center text-2xl font-black animate-pulse">Cargando ejercicio...</div>';
 
-        try {
-            const response = await fetch(url);
-            const html = await response.text();
-            modalContent.innerHTML = html;
+    try {
+        const response = await fetch(url);
+        const html = await response.text();
+        modalContent.innerHTML = html;
 
-            const form = modalContent.querySelector('form');
-            if (form) {
-                form.addEventListener('submit', async (e) => {
-                    e.preventDefault();
-                    const formData = new FormData(form);
-                    const postResponse = await fetch(url, { method: 'POST', body: formData });
-                    const resultHtml = await postResponse.text();
-                    modalContent.innerHTML = resultHtml;
-                });
-            }
-        } catch (error) {
-            modalContent.innerHTML = '<div class="text-white text-center font-bold">Hubo un error al cargar el ejercicio.</div>';
+        // 👇 ejecuta los scripts que vienen dentro del HTML cargado
+        modalContent.querySelectorAll('script').forEach(oldScript => {
+            const newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+            document.body.removeChild(newScript);
+        });
+
+        const form = modalContent.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const postResponse = await fetch(url, { method: 'POST', body: formData });
+                const resultHtml = await postResponse.text();
+                modalContent.innerHTML = resultHtml;
+            });
         }
+    } catch (error) {
+        modalContent.innerHTML = '<div class="text-white text-center font-bold">Hubo un error al cargar el ejercicio.</div>';
     }
+}
 
     function cerrarModal() {
         modal.classList.remove('flex');
