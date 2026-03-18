@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, session, redirect, url_for
+from flask import Blueprint, render_template, request, session, redirect, url_for, jsonify
 # Asegúrate de importar tu servicio donde manejes la lógica de base de datos
 from services import quiz_service
 
@@ -25,7 +25,8 @@ def ejercicio_view(level_id, ejercicio_id):
         return render_template('quiz.html', 
                                pregunta=pregunta, 
                                level_id=level_id, 
-                               ejercicio_id=ejercicio_id)
+                               ejercicio_id=ejercicio_id,
+                               comodines=quiz_service.get_comodines(estudiante_id, level_id))
 
     # --- SI EL USUARIO ENVÍA SU RESPUESTA ---
     elif request.method == 'POST':
@@ -37,3 +38,12 @@ def ejercicio_view(level_id, ejercicio_id):
 
         # Renderizamos la pantalla de éxito/error pasándole el resultado
         return render_template('resultado.html', resultado=resultado)
+
+# creamos nueva ruta para comodines
+@quiz.route('/quiz/<int:level_id>/comodin', methods=['POST']) 
+def usar_comodin(level_id):
+    estudiante_id = session.get('user_id')
+    if not estudiante_id:
+        return jsonify({'success': False}), 401
+    resultado = quiz_service.usar_comodin(estudiante_id, level_id)
+    return jsonify(resultado)

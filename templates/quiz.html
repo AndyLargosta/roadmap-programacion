@@ -4,19 +4,26 @@
         <span class="text-[#F4B942] font-bold uppercase tracking-widest text-xs">
             Nivel {{ level_id }} • Ejercicio {{ ejercicio_id }}
         </span>
-        <button type="button" onclick="cerrarModal()" class="text-[#8B8FB5] hover:text-white transition-colors font-bold text-sm">
-            ✕ Abandonar
-        </button>
+
+        <div class="flex items-center gap-3">
+            <!-- botón comodín pequeño con ícono de foco -->
+            <button type="button"
+                    id="btn-comodin"
+                    onclick="activarComodin()"
+                    {% if comodines == 0 %}disabled{% endif %}
+                    class="flex items-center gap-1 px-3 py-1 rounded-full border-2 border-[#F4B942] text-[#F4B942] hover:bg-[#F4B942] hover:text-[#252848] transition-all text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#F4B942]">
+                💡 <span id="comodines-count">{{ comodines }}</span>
+            </button>
+
+            <button type="button" onclick="cerrarModal()" class="text-[#8B8FB5] hover:text-white transition-colors font-bold text-sm">
+                ✕ Abandonar
+            </button>
+        </div>
     </div>
 
     <h1 class="text-2xl text-white font-black mb-8 text-center">{{ pregunta.texto }}</h1>
 
     <form class="flex flex-col gap-4">
-        <button type="button"
-                onclick="activarComodin()"
-                class="mb-4 px-4 py-2 bg-gray-500 hover:bg-gray-600 text-white rounded-lg">
-            Usar comodín
-        </button>
         {% for opcion in pregunta.opciones %}
         <label 
             data-comodin="{{ opcion.comodin | lower }}"
@@ -35,3 +42,34 @@
         </button>
     </form>
 </div>
+
+<script>
+    const levelId = {{ level_id }};
+
+function activarComodin() {
+    const btn = document.getElementById('btn-comodin');
+    btn.disabled = true;  // deshabilitar el boton de comodin tras click
+    btn.classList.add('opacity-40', 'cursor-not-allowed');
+
+    // efecto visual inmediato
+    const opciones = document.querySelectorAll(".opcion");
+    opciones.forEach(opcion => {
+        if (opcion.dataset.comodin === "true") {
+            opcion.classList.add("bg-gray-700", "border-gray-500", "opacity-50", "pointer-events-none");
+            opcion.querySelector("input").disabled = true;
+        }
+    });
+
+    // confirmar con el backend
+    fetch(`/quiz/${levelId}/comodin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('comodines-count').textContent = data.comodines_restantes;
+        }
+    });
+}
+</script>
