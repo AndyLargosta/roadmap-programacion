@@ -125,28 +125,4 @@
     </footer>
 
 </body>
-<script>
-    function activarComodin() {
-        
-        const opciones = document.querySelectorAll(".opcion");
-
-        opciones.forEach(opcion => {
-
-            if (opcion.dataset.comodin === "true") {
-
-                opcion.classList.add(
-                    "bg-gray-700",
-                    "border-gray-500",
-                    "opacity-50",
-                    "pointer-events-none"
-                );
-
-                const radio = opcion.querySelector("input");
-                radio.disabled = true;
-            }
-
-        });
-
-    }
-</script>
 </html>
