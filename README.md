@@ -1,13 +1,13 @@
 # Pingui Code 🐧
 
-**Pingui Code** es una plataforma de aprendizaje interactiva, inspirada en Duolingo, diseñada para dominar conceptos de **Python** a través de cuestionarios dinámicos y divertidos.
+**Pingui Code** es una plataforma de aprendizaje interactiva, diseñada para dominar conceptos de **Python** a través de cuestionarios dinámicos y divertidos.
 
 ---
 
 ## ✨ Características Principales
 
 - **Aprendizaje Progresivo:** Cuestionarios organizados por niveles de dificultad dentro de un Roadmap interactivo.
-- **Sistema de Usuarios Inteligente:** Inicio de sesión simplificado. Si el usuario no existe, el sistema crea un nuevo perfil automáticamente al ingresar por primera vez.
+- **Sistema de Usuarios Inteligente:** Inicio de sesión inteligente. Si el usuario no existe, el sistema crea un nuevo perfil automáticamente al ingresar por primera vez.
 - **Sistema de Comodines:** Para ayudar en el aprendizaje, cada usuario cuenta con **3 comodines por nivel** que permiten eliminar una de las opciones incorrectas en las preguntas más difíciles.
 - **Persistencia de Datos:** Seguimiento del progreso, puntajes y niveles completados mediante SQLAlchemy y SQLite.
 
@@ -40,14 +40,14 @@ Es fundamental usar un entorno virtual para mantener las dependencias aisladas.
 
 **En Windows:**
 ```bash
-python -m venv venv
-venv\Scripts\activate
+python -m venv .venv
+.venv\Scripts\activate
 ```
 
 **En Linux:**
 ```bash
-python3 -m venv venv
-source venv/bin/activate
+python3 -m venv .venv
+source .venv/bin/activate
 ```
 
 ### 3. Instalar dependencias
