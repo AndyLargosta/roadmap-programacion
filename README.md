@@ -31,7 +31,7 @@ Sigue estos pasos para ejecutar el proyecto en tu entorno local.
 
 ```bash
 git clone https://github.com/AndyLargosta/roadmap-programacion
-cd pingui-code
+cd roadmap-programacion
 ```
 
 ### 2. Crear y activar el entorno virtual
