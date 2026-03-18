@@ -5,7 +5,7 @@
             Nivel {{ level_id }} • Ejercicio {{ ejercicio_id }}
         </span>
 
-        <div class="flex items-center gap-3">
+        <div class="flex items-center gap-2">
             <!-- botón comodín pequeño con ícono de foco -->
             <button type="button"
                     id="btn-comodin"
@@ -21,9 +21,106 @@
         </div>
     </div>
 
-    <h1 class="text-2xl text-white font-black mb-8 text-center">{{ pregunta.texto }}</h1>
+    <div class="mb-2 flex justify-center items-center max-w-full gap-1">
+        {% if pregunta.id == 1 or pregunta.id == 8 or  pregunta.id == 15  or pregunta.id == 13 or pregunta.id == 17 or pregunta.id == 21 %}
+            <div class="relative inline-block group">
+            <button>
+                <img src="/static/personajes/Olaf_pelo.gif" 
+                    class="w-full max-w-[74px] md:max-w-[110px] object-contain"
+                    alt="gif explicativo">
+            </button>
+                            
+            <span class="absolute bottom-full mb-2 hidden group-hover:block w-20 p-2 text-xs text-white bg-black rounded shadow-lg text-center">
+                Olaf
+            </span>
+            
+            </div>
+            
+        {% elif pregunta.id == 2 or pregunta.id == 9 or  pregunta.id == 16  or pregunta.id == 22 %}
+            <div class="relative inline-block group">
+            <button>
+                <img src="/static/personajes/aide_baila.gif" 
+                    class="w-full max-w-[95px] md:max-w-[140px] object-contain"
+                    alt="gif explicativo">
+            </button>
+                            
+            <span class="absolute bottom-full mb-2 hidden group-hover:block w-20 p-2 text-xs text-white bg-black rounded shadow-lg text-center">
+                Aide
+            </span>
+            
+            </div>
+        {% elif pregunta.id == 3 or pregunta.id == 10 or  pregunta.id == 17  or pregunta.id == 23 %}
+            <div class="relative inline-block group">
+            <button>
+                <img src="/static/personajes/mati_muscle.gif" 
+                    class="w-full max-w-[88px] md:max-w-[128px] object-contain"
+                    alt="gif explicativo">
+            </button>
+                            
+            <span class="absolute bottom-full mb-2 hidden group-hover:block w-20 p-0 text-xs text-white bg-black rounded shadow-lg text-center">
+                Mati
+            </span>
+            
+            </div>
+        {% elif pregunta.id == 4 or pregunta.id == 11 or  pregunta.id == 18  or pregunta.id == 24 %}
+            <div class="relative inline-block group">
+            <button>
+                <img src="/static/personajes/samu_ocalcula.gif" 
+                    class="w-full max-w-[80px] md:max-w-[120px] object-contain"
+                    alt="gif explicativo">
+            </button>
+                            
+            <span class="absolute bottom-full mb-2 hidden group-hover:block w-20 p-2 text-xs text-white bg-black rounded shadow-lg text-center">
+                Samu
+            </span>
+            
+            </div>
+        {% elif pregunta.id == 5 or pregunta.id == 12 or  pregunta.id == 19  %}
+            <div class="relative inline-block group">
+            <button>
+                <img src="/static/personajes/edu_saluda.gif" 
+                    class="w-full max-w-[80px] md:max-w-[120px] object-contain"
+                    alt="gif explicativo">
+            </button>
+                            
+            <span class="absolute bottom-full mb-2 hidden group-hover:block w-20 p-2 text-xs text-white bg-black rounded shadow-lg text-center">
+                Edu
+            </span>
+            
+            </div>
+        {% elif pregunta.id == 6 or pregunta.id == 13 or  pregunta.id == 20  %}
+            <div class="relative inline-block group">
+            <button>
+                <img src="/static/personajes/ara_sonrie.gif" 
+                    class="w-full max-w-[80px] md:max-w-[120px] object-contain"
+                    alt="gif explicativo">
+            </button>
+                            
+            <span class="absolute bottom-full mb-2 hidden group-hover:block w-20 p-2 text-xs text-white bg-black rounded shadow-lg text-center">
+                Ara
+            </span>
+            
+            </div>
+        {% else %}
+            <div class="relative inline-block group">
+            <button>
+                <img src="/static/personajes/nico_piensa.gif" 
+                    class="w-full max-w-[80px] md:max-w-[120px] object-contain"
+                    alt="gif explicativo">
+            </button>
+                            
+            <span class="absolute bottom-full mb-2 hidden group-hover:block w-20 p-2 text-xs text-white bg-black rounded shadow-lg text-center">
+                Nico
+            </span>
+            
+            </div>
+        {% endif %}
 
-    <form class="flex flex-col gap-4">
+        <h1 class="text-1xl text-white font-black mb-1 text-center">{{ pregunta.texto }}</h1>
+    </div>
+
+
+    <form class="flex flex-col gap-2">
         {% for opcion in pregunta.opciones %}
         <label 
             data-comodin="{{ opcion.comodin | lower }}"

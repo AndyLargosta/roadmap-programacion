@@ -5,24 +5,20 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PINGÜICODE | Aprende a Programar</title>
 
-    <!-- Fuente Inter de Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&display=swap" rel="stylesheet">
-    
-    <!-- Tailwind CSS via CDN -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;900&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
-    
+
     <script>
-        /* Colores y fuentes custom del proyecto */
         tailwind.config = {
             theme: {
                 extend: {
                     colors: {
                         penguin: {
-                            dark: '#17192b',    /* Fondo principal */
-                            darker: '#121422',  /* Fondo más oscuro (header, cards) */
-                            yellow: '#fca311',  /* Amarillo para botones y acentos */
-                            pink: '#e63946',    /* Rojo/rosa para acentos secundarios */
-                            text: '#e2e8f0'     /* Texto principal */
+                            dark:   '#17192b',
+                            darker: '#121422',
+                            yellow: '#fca311',
+                            pink:   '#e63946',
+                            text:   '#e2e8f0'
                         }
                     },
                     fontFamily: {
@@ -32,97 +28,152 @@
             }
         }
     </script>
-    
+
     <style type="text/tailwindcss">
         @layer components {
-            /* Botón amarillo con efecto 3D */
             .btn-primary {
-                @apply bg-penguin-yellow hover:bg-yellow-400 text-penguin-darker px-6 py-2 rounded-full font-bold shadow-[0_4px_0_#d97706] hover:shadow-[0_2px_0_#d97706] hover:translate-y-[2px] transition-all cursor-pointer inline-block text-center;
+                @apply bg-penguin-yellow hover:bg-yellow-400 text-penguin-darker
+                       px-4 py-2 sm:px-6 rounded-full font-bold
+                       shadow-[0_4px_0_#d97706] hover:shadow-[0_2px_0_#d97706]
+                       hover:translate-y-[2px] transition-all cursor-pointer
+                       inline-block text-center text-sm sm:text-base;
             }
-            /* Botón secundario con borde rosa */
             .btn-secondary {
-                @apply bg-transparent border-2 border-penguin-pink text-penguin-pink hover:bg-penguin-pink hover:text-white px-6 py-2 rounded-full font-bold transition-all cursor-pointer inline-block text-center;
+                @apply bg-transparent border-2 border-penguin-pink text-penguin-pink
+                       hover:bg-penguin-pink hover:text-white
+                       px-4 py-2 sm:px-6 rounded-full font-bold
+                       transition-all cursor-pointer inline-block text-center
+                       text-sm sm:text-base;
             }
-            /* Alerta de éxito */
             .alert-success {
-                @apply bg-green-500/10 border border-green-500 text-green-400 px-4 py-3 rounded-xl flex items-center gap-3 font-medium my-4;
+                @apply bg-green-500/10 border border-green-500 text-green-400
+                       px-4 py-3 rounded-xl flex items-center gap-3 font-medium my-4;
             }
-            /* Alerta de error */
             .alert-error {
-                @apply bg-penguin-pink/10 border border-penguin-pink text-penguin-pink px-4 py-3 rounded-xl flex items-center gap-3 font-medium my-4;
+                @apply bg-penguin-pink/10 border border-penguin-pink text-penguin-pink
+                       px-4 py-3 rounded-xl flex items-center gap-3 font-medium my-4;
             }
-            /* Card glassmorphism */
             .card-penguin {
-                @apply bg-penguin-darker/50 border border-gray-800 rounded-3xl p-8 shadow-2xl backdrop-blur-sm hover:border-penguin-yellow/50 transition-all;
+                @apply bg-penguin-darker/50 border border-gray-800 rounded-3xl
+                       p-4 sm:p-8 shadow-2xl backdrop-blur-sm
+                       hover:border-penguin-yellow/50 transition-all;
             }
+        }
+    </style>
+
+    <style>
+        /* estilos del logo igual al login */
+        .brand-icon {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #F4B942, #e8a020);
+            border-radius: 10px;
+            display: grid;
+            place-items: center;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 13px;
+            font-weight: 700;
+            color: #252848;
+            box-shadow: 0 4px 14px rgba(244,185,66,.35);
+            flex-shrink: 0;
+        }
+        .brand-name {
+            font-size: 18px;
+            font-weight: 900;
+            letter-spacing: -.5px;
+            color: #FFFFFF;
+        }
+        .brand-name span {
+            color: #F4B942;
+        }
+        .brand-year {
+            font-size: 10px;
+            font-family: 'IBM Plex Mono', monospace;
+            color: #F4B942;
+            background: rgba(244,185,66,.12);
+            border: 1px solid rgba(244,185,66,.3);
+            border-radius: 5px;
+            padding: 2px 6px;
+            margin-left: 4px;
         }
     </style>
 </head>
 
-<body class="bg-penguin-dark text-penguin-text font-sans min-h-screen flex flex-col antialiased selection:bg-penguin-yellow selection:text-penguin-darker">
+<!-- h-screen overflow-hidden evita que el body haga scroll -->
+<body class="bg-penguin-dark text-penguin-text font-sans h-screen overflow-hidden
+             flex flex-col antialiased
+             selection:bg-penguin-yellow selection:text-penguin-darker">
 
-    <!-- 
-        HEADER: fijo arriba con efecto de vidrio esmerilado 
-    -->
-    <header class="bg-penguin-darker/90 backdrop-blur-md sticky top-0 z-50 border-b border-white/5 shadow-xl">
+    <!-- header fijo arriba -->
+    <header class="bg-penguin-darker/90 backdrop-blur-md z-50
+                   border-b border-white/5 shadow-xl flex-shrink-0">
+        <nav class="w-full px-4 sm:px-6 py-3 sm:py-4 flex items-center gap-4">
 
-        <!-- 
-            NAV: w-full para ocupar todo el ancho,
-            px-6 para padding lateral cómodo 
-        -->
-        <nav class="w-full px-6 py-4 flex items-center">
-            
-            <!-- 
-                LOGO (izquierda):
-                mr-auto empuja todo lo demás hacia la derecha 
-            -->
-            <a href="/" class="text-2xl font-black tracking-tighter flex items-center gap-2 group mr-auto">
-                <!-- inline-block necesario para que el rotate funcione -->
-                <span class="text-penguin-yellow group-hover:rotate-12 transition-transform inline-block">&lt;🐧&gt;</span>
-                <!-- PingüiCode junto con la ü correcta -->
-                <span class="text-white">Pingüi</span><span class="text-penguin-yellow">Code</span>
+            <!-- logo igual al login -->
+            <a href="/" class="flex items-center gap-3 mr-auto no-underline">
+                <div class="brand-icon">&lt;/&gt;</div>
+                <div style="display:flex; align-items:center; gap:6px;">
+                    <span class="brand-name">PINGÜI<span>CODE</span></span>
+                    <span class="brand-year">beta</span>
+                </div>
             </a>
-            
-            <!-- 
-                LOGOUT (derecha):
-                ml-auto lo empuja al extremo derecho
-                pr-4 para que no quede pegado al borde 
-            -->
-            <div class="ml-auto pr-4">
-                <a href="/logout" class="btn-primary text-sm uppercase tracking-widest">Logout</a>
+
+            <!-- logout -->
+            <div class="ml-auto">
+                <a href="/logout"
+                   class="btn-primary uppercase tracking-widest text-xs sm:text-sm">
+                    Logout
+                </a>
             </div>
 
         </nav>
     </header>
 
-    <!-- 
-        MAIN: flex-grow ocupa todo el espacio entre header y footer 
-    -->
-    <main class="container mx-auto px-6 py-12 flex-grow">
+    <!-- main ocupa el espacio entre header y footer sin scroll propio -->
+    <main class="flex-1 min-h-0 w-full overflow-hidden">
         {% block content %}
         {% endblock %}
     </main>
 
-    <!-- 
-        FOOTER: siempre al fondo con borde superior sutil 
-    -->
-    <footer class="py-5 border-t border-white/5 bg-penguin-darker/50">
-        <div class="container mx-auto px-6 text-center flex flex-col items-center">
-            
-            <!-- Logo del footer -->
-            <img src="../static/images/footer.jpg" 
-                alt="PingüiCode Logo"
-                class="h-10 w-auto opacity-80 hover:opacity-100 transition-opacity mb-1">
+    <!-- footer fijo abajo -->
+    <footer class="py-3 sm:py-4 border-t border-white/5 bg-penguin-darker/50 flex-shrink-0">
+        <div class="w-full px-4 sm:px-6 text-center flex flex-col items-center gap-1">
 
-            <!-- Créditos del hackathon -->
-            <p class="text-gray-500 text-sm font-medium">
-                Hackathon 2026 — 
-                <span class="text-white">Herramienta creada para aprender a programar—</span> 
-                <span class="text-penguin-pink font-bold">Creada por "El mejor grupo"</span>
+            <img src="../static/images/footer.jpg"
+                 alt="PingüiCode Logo"
+                 class="h-8 sm:h-10 w-auto opacity-80 hover:opacity-100 transition-opacity">
+
+            <p class="text-gray-500 text-xs sm:text-sm font-medium">
+                Hackathon 2026 —
+                <span class="text-gray-500">Herramienta creada para aprender a programar —</span>
+                <span class="text-gray-500">Creada por "Grupo 1: Mejor grupo"</span>
             </p>
 
         </div>
     </footer>
 
 </body>
+
+<script>
+    function activarComodin() {
+        // descuenta el comodin en la bd
+        fetch('/roadmap/usar-comodin', { method: 'POST' })
+            .catch(err => console.error('error al usar comodin:', err));
+
+        // elimina visualmente las opciones incorrectas del quiz
+        const opciones = document.querySelectorAll(".opcion");
+        opciones.forEach(opcion => {
+            if (opcion.dataset.comodin === "true") {
+                opcion.classList.add(
+                    "bg-gray-700",
+                    "border-gray-500",
+                    "opacity-50",
+                    "pointer-events-none"
+                );
+                const radio = opcion.querySelector("input");
+                radio.disabled = true;
+            }
+        });
+    }
+</script>
 </html>
