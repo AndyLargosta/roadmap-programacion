@@ -1,0 +1,527 @@
+{% extends "base.html" %}
+{% block content %}
+
+<style>
+    .step-1 { padding-left: 0%;  padding-right: 55%; }
+    .step-2 { padding-left: 25%; padding-right: 25%; }
+    .step-3 { padding-left: 55%; padding-right: 0%;  }
+    .step-4 { padding-left: 0%;  padding-right: 55%; }
+    .step-5 { padding-left: 25%; padding-right: 25%; }
+    .step-6 { padding-left: 55%; padding-right: 0%;  }
+    .step-7 { padding-left: 0%;  padding-right: 55%; }
+
+    @media (max-width: 640px) {
+        .step-1, .step-2, .step-3,
+        .step-4, .step-5, .step-6, .step-7 {
+            padding-left: 0%;
+            padding-right: 0%;
+        }
+        .level-node { width: 100px !important; height: 100px !important; }
+        .level-node .text-5xl { font-size: 1.5rem !important; }
+        .level-node .text-base { font-size: 0.6rem !important; }
+        .node-final { width: 110px !important; height: 110px !important; }
+    }
+
+    @media (max-width: 1024px) {
+        .step-1 { padding-left: 0%;  padding-right: 45%; }
+        .step-2 { padding-left: 20%; padding-right: 20%; }
+        .step-3 { padding-left: 45%; padding-right: 0%;  }
+        .step-4 { padding-left: 0%;  padding-right: 45%; }
+        .step-5 { padding-left: 20%; padding-right: 20%; }
+        .step-6 { padding-left: 45%; padding-right: 0%;  }
+        .step-7 { padding-left: 0%;  padding-right: 45%; }
+    }
+
+    .conn-svg {
+        display: block;
+        width: 100%;
+        position: relative;
+        z-index: 1;
+        margin-top: -4px;
+        margin-bottom: -4px;
+    }
+
+    .col-roadmap::-webkit-scrollbar,
+    .col-dashboard::-webkit-scrollbar { width: 3px; }
+    .col-roadmap::-webkit-scrollbar-track,
+    .col-dashboard::-webkit-scrollbar-track { background: transparent; }
+    .col-roadmap::-webkit-scrollbar-thumb,
+    .col-dashboard::-webkit-scrollbar-thumb { background: transparent; }
+    .col-roadmap:hover::-webkit-scrollbar-thumb,
+    .col-dashboard:hover::-webkit-scrollbar-thumb {
+        background: #353760;
+        border-radius: 10px;
+    }
+
+    /* estilo del comodin usado */
+    .comodin-usado {
+        opacity: 0.3;
+        cursor: not-allowed !important;
+        border-color: #353760 !important;
+        background-color: #1A1C38 !important;
+    }
+    .comodin-usado:hover {
+        transform: none !important;
+        background-color: #1A1C38 !important;
+    }
+</style>
+
+<div class="bg-[#1A1C38] min-h-screen font-sans">
+<div class="flex h-screen w-full overflow-hidden">
+
+    <!-- columna izquierda: roadmap con scroll -->
+    <div class="col-roadmap flex-1 overflow-y-auto overflow-x-hidden pb-16">
+        <div class="w-full max-w-[900px] mx-auto px-4 sm:px-8 py-8 text-center">
+
+            <h1 class="text-3xl sm:text-5xl font-black text-white mb-2">
+                Tu Roadmap de Programación
+            </h1>
+            <p class="text-[#F4B942] text-sm sm:text-lg mb-8 opacity-85">
+                Completá los 4 ejercicios de cada nivel para desbloquear el siguiente.
+            </p>
+
+            <div class="flex flex-col w-full">
+
+            {% for level in levels %}
+
+                <div class="step step-{{ loop.index }} flex flex-col items-center w-full">
+                    <div class="level-node w-[140px] h-[140px] sm:w-[200px] sm:h-[200px]
+                                rounded-full flex flex-col items-center justify-center
+                                text-center relative z-10
+                        {% if level.estado == 'bloqueado' %}
+                            bg-[#252848] text-[#5C5F82] border-[3px] border-[#353760] opacity-60
+                        {% elif level.estado == 'disponible' %}
+                            bg-[#252848] text-white border-[3px] border-[#F4B942]
+                            shadow-[0_0_20px_rgba(244,185,66,0.45)]
+                        {% else %}
+                            bg-[#F4B942] text-[#252848] border-[3px] border-[#D9A030]
+                            shadow-[0_4px_16px_rgba(244,185,66,0.4)]
+                        {% endif %}">
+
+                        <span class="text-3xl sm:text-5xl font-black leading-none">{{ loop.index }}</span>
+                        <span class="text-xs sm:text-base font-bold mt-1 leading-tight">{{ level.titulo }}</span>
+
+                        {% if level.estado == 'completado' %}
+                            <span class="text-xs sm:text-sm font-bold mt-1">✓ 100%</span>
+                        {% elif level.estado == 'disponible' %}
+                            <span class="text-xs sm:text-sm mt-1 text-[#F4B942]">
+                                {{ level.completados }}/{{ level.total }}
+                            </span>
+                        {% else %}
+                            <span class="text-xl sm:text-2xl mt-1">🔒</span>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% if level.conn_type %}
+
+                {% if level.conn_type == 'A' %}
+                    {% set x1=22.5 %} {% set x2=50 %}
+                    {% set pts = [(28.0,6),(33.5,12),(39.0,18),(44.5,24)] %}
+                {% elif level.conn_type == 'B' %}
+                    {% set x1=50 %} {% set x2=77.5 %}
+                    {% set pts = [(55.5,6),(61.0,12),(66.5,18),(72.0,24)] %}
+                {% else %}
+                    {% set x1=77.5 %} {% set x2=22.5 %}
+                    {% set pts = [(66.5,6),(55.5,12),(44.5,18),(33.5,24)] %}
+                {% endif %}
+
+                <svg class="conn-svg"
+                     viewBox="0 0 100 30"
+                     xmlns="http://www.w3.org/2000/svg"
+                     preserveAspectRatio="none">
+
+                    <line x1="{{ x1 }}" y1="0"
+                          x2="{{ x2 }}" y2="30"
+                          stroke="#353760"
+                          stroke-width="1.2"
+                          stroke-dasharray="2.5 1.8"/>
+
+                    {% for px, py in pts %}
+                        {% set i = loop.index0 %}
+
+                        {# un ejercicio es clickeable si:
+                           - el nivel no esta bloqueado
+                           - el ejercicio anterior fue completado (i == 0 siempre disponible)
+                           - o el ejercicio ya fue completado (se puede revisar) #}
+                        {% set ejercicio_anterior_ok = (i == 0) or level.ejercicios[i - 1] %}
+                        {% set es_clickeable = level.estado != 'bloqueado' and ejercicio_anterior_ok %}
+
+                        {% if level.estado == 'bloqueado' %}
+                            {% set fc="#252848" %} {% set sc="#353760" %} {% set tc="#5C5F82" %}
+                            {% set label = loop.index|string %}
+                        {% elif level.ejercicios[i] %}
+                            {% set fc="#F4B942" %} {% set sc="#D9A030" %} {% set tc="#252848" %}
+                            {% set label = "✓" %}
+                        {% elif es_clickeable %}
+                            {# ejercicio disponible: siguiente al ultimo completado #}
+                            {% set fc="#252848" %} {% set sc="#F4B942" %} {% set tc="#F4B942" %}
+                            {% set label = loop.index|string %}
+                        {% else %}
+                            {# ejercicio bloqueado dentro del nivel: gris como el nivel bloqueado #}
+                            {% set fc="#1E1C38" %} {% set sc="#353760" %} {% set tc="#5C5F82" %}
+                            {% set label = loop.index|string %}
+                        {% endif %}
+
+                        {% if es_clickeable %}
+                            <g onclick="abrirModalQuiz('/quiz/{{ level.id }}/ejercicio/{{ loop.index }}')"
+                               style="cursor:pointer;"
+                               class="hover:opacity-75 transition-opacity">
+                        {% else %}
+                            <g>
+                        {% endif %}
+
+                            <circle cx="{{ px }}" cy="{{ py }}" r="3.4"
+                                    fill="{{ fc }}"
+                                    stroke="{{ sc }}"
+                                    stroke-width="0.8"/>
+
+                            <text x="{{ px }}" y="{{ py + 1.2 }}"
+                                  text-anchor="middle"
+                                  dominant-baseline="middle"
+                                  font-size="3"
+                                  font-weight="700"
+                                  fill="{{ tc }}">{{ label }}</text>
+
+                        </g>
+
+                    {% endfor %}
+
+                </svg>
+                {% endif %}
+
+            {% endfor %}
+
+            {% set completados_total = levels | selectattr('estado', 'equalto', 'completado')
+                                              | list | length %}
+            {% set todos_completados = completados_total == levels | list | length %}
+
+            <div class="step step-7 flex flex-col items-center w-full">
+                <div class="node-final w-[140px] h-[140px] sm:w-[200px] sm:h-[200px]
+                            rounded-full flex flex-col items-center justify-center
+                            text-center relative z-10 transition-transform duration-200
+                    {% if todos_completados %}
+                        bg-[#F4B942] text-[#252848] border-[3px] border-[#D9A030]
+                        shadow-[0_4px_24px_rgba(244,185,66,0.6)] cursor-pointer hover:scale-105
+                    {% else %}
+                        bg-[#252848] text-[#5C5F82] border-[3px] border-dashed border-[#353760] opacity-50
+                    {% endif %}">
+
+                    <span class="text-3xl sm:text-5xl leading-none">🏆</span>
+                    <span class="text-xs sm:text-base font-bold mt-2 leading-tight">Completado</span>
+
+                    {% if todos_completados %}
+                        <span class="text-xs sm:text-sm font-bold mt-1">¡Felicitaciones!</span>
+                    {% else %}
+                        <span class="text-xl sm:text-2xl mt-1">🔒</span>
+                    {% endif %}
+                </div>
+            </div>
+
+            </div>
+        </div>
+    </div>
+
+    <!-- dashboard desktop -->
+    <aside class="col-dashboard hidden sm:flex w-[22%] min-w-[180px] max-w-[240px]
+                  bg-[#20234A] border-2 border-[#F4B942] rounded-2xl
+                  flex-col gap-2 mx-3 my-3 ml-0 p-3 h-fit self-start">
+
+        <!-- perfil -->
+        <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
+                    flex flex-col items-center gap-1.5">
+            <div class="w-12 h-12 rounded-full bg-[#1A1C38] border-2 border-[#F4B942]
+                        flex items-center justify-center">
+                <span class="text-2xl font-black text-[#F4B942]">
+                    {{ session.get('nombre_usuario', 'E')[0] | upper }}
+                </span>
+            </div>
+            <span class="text-white text-sm font-bold text-center">
+                {{ session.get('nombre_usuario', 'Estudiante') }}
+            </span>
+            <span class="bg-[#F4B942] text-[#252848] text-[10px] font-bold
+                         px-3 py-0.5 rounded-full">
+                Nivel {{ session.get('nivel', 1) }}
+            </span>
+        </div>
+
+        <!-- progreso total -->
+        <div class="bg-[#252848] rounded-xl border border-[#353760] p-3 flex flex-col gap-1.5">
+            <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest">
+                Progreso total
+            </span>
+            {% set completados_dash = levels | selectattr('estado', 'equalto', 'completado')
+                                             | list | length %}
+            {% set total_dash = levels | list | length %}
+            {% set pct = ((completados_dash / total_dash) * 100) | int
+                         if total_dash > 0 else 0 %}
+            <div class="w-full h-1.5 bg-[#353760] rounded-full overflow-hidden">
+                <div class="h-full bg-[#F4B942] rounded-full transition-all duration-500"
+                     style="width: {{ pct }}%; min-width: 4px;"></div>
+            </div>
+            <span class="text-[#8B8FB5] text-[10px] self-end">
+                {{ completados_dash }}/{{ total_dash }} niveles
+            </span>
+        </div>
+
+        <!-- comodines -->
+        <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
+                    flex flex-col items-center gap-2">
+            <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest self-start">
+                Comodines — pistas
+            </span>
+            <div class="flex gap-2 justify-center" id="comodines-container">
+                {% for i in range(3) %}
+                <button
+                    id="comodin-{{ i }}"
+                    onclick="usarComodin({{ i }})"
+                    class="comodin-btn w-10 h-10 rounded-lg bg-[#1A1C38] border-2 border-[#F4B942]
+                           text-lg flex items-center justify-center
+                           transition-all duration-150 hover:scale-110 hover:bg-[#F4B942]
+                           {% if i >= comodines %}comodin-usado{% endif %}"
+                    {% if i >= comodines %}disabled{% endif %}>
+                    💡
+                </button>
+                {% endfor %}
+            </div>
+            <span class="text-[#8B8FB5] text-[10px] self-end" id="comodines-label">
+                {{ comodines }} comodines disponibles
+            </span>
+        </div>
+
+        <!-- lista de niveles -->
+        <div class="bg-[#252848] rounded-xl border border-[#353760] p-3 flex flex-col gap-1.5">
+            <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest mb-1">
+                Niveles completados
+            </span>
+            {% for level in levels %}
+            <div class="flex items-center gap-2">
+                <span class="w-2 h-2 rounded-full flex-shrink-0
+                    {% if level.estado == 'completado' %}bg-[#F4B942]
+                    {% elif level.estado == 'disponible' %}bg-white border border-[#F4B942]
+                    {% else %}bg-[#353760]{% endif %}">
+                </span>
+                <span class="flex-1 text-white text-[10px] font-medium truncate">
+                    {{ level.titulo }}
+                </span>
+                {% if level.estado == 'completado' %}
+                    <span class="text-[#F4B942] text-[10px] font-bold">✓</span>
+                {% elif level.estado == 'disponible' %}
+                    <span class="text-[#F4B942] text-[10px] font-bold">
+                        {{ level.completados }}/4
+                    </span>
+                {% else %}
+                    <span class="text-[#5C5F82] text-[10px]">🔒</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+
+    </aside>
+
+</div>
+
+<!-- boton flotante mobile -->
+<button onclick="toggleDashboard()"
+        class="sm:hidden fixed top-28 right-4 z-40 w-12 h-12 rounded-full
+               bg-[#F4B942] text-[#252848] text-xl font-black
+               flex items-center justify-center
+               shadow-[0_4px_16px_rgba(244,185,66,0.5)]">
+    📊
+</button>
+
+<!-- dashboard mobile -->
+<div id="mobile-dashboard"
+     class="sm:hidden fixed top-44 right-4 z-40 w-64
+            bg-[#20234A] border-2 border-[#F4B942] rounded-2xl
+            flex-col gap-2 p-3 hidden
+            shadow-[0_8px_32px_rgba(0,0,0,0.5)]">
+
+    <!-- perfil mobile -->
+    <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
+                flex flex-col items-center gap-1.5">
+        <div class="w-10 h-10 rounded-full bg-[#1A1C38] border-2 border-[#F4B942]
+                    flex items-center justify-center">
+            <span class="text-xl font-black text-[#F4B942]">
+                {{ session.get('nombre_usuario', 'E')[0] | upper }}
+            </span>
+        </div>
+        <span class="text-white text-sm font-bold">
+            {{ session.get('nombre_usuario', 'Estudiante') }}
+        </span>
+        <span class="bg-[#F4B942] text-[#252848] text-[10px] font-bold px-3 py-0.5 rounded-full">
+            Nivel {{ session.get('nivel', 1) }}
+        </span>
+    </div>
+
+    <!-- progreso mobile -->
+    <div class="bg-[#252848] rounded-xl border border-[#353760] p-3 flex flex-col gap-1.5">
+        <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest">
+            Progreso total
+        </span>
+        {% set completados_mob = levels | selectattr('estado', 'equalto', 'completado')
+                                        | list | length %}
+        {% set total_mob = levels | list | length %}
+        {% set pct_mob = ((completados_mob / total_mob) * 100) | int
+                         if total_mob > 0 else 0 %}
+        <div class="w-full h-1.5 bg-[#353760] rounded-full overflow-hidden">
+            <div class="h-full bg-[#F4B942] rounded-full"
+                 style="width: {{ pct_mob }}%; min-width: 4px;"></div>
+        </div>
+        <span class="text-[#8B8FB5] text-[10px] self-end">
+            {{ completados_mob }}/{{ total_mob }} niveles
+        </span>
+    </div>
+
+    <!-- comodines mobile -->
+    <div class="bg-[#252848] rounded-xl border border-[#353760] p-3
+                flex flex-col items-center gap-2">
+        <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest self-start">
+            Comodines — pistas
+        </span>
+        <div class="flex gap-2 justify-center" id="comodines-container-mob">
+            {% for i in range(3) %}
+            <button
+                id="comodin-mob-{{ i }}"
+                onclick="usarComodin({{ i }})"
+                class="comodin-btn w-10 h-10 rounded-lg bg-[#1A1C38] border-2 border-[#F4B942]
+                       text-lg flex items-center justify-center
+                       transition-all duration-150 hover:scale-110 hover:bg-[#F4B942]
+                       {% if i >= comodines %}comodin-usado{% endif %}"
+                {% if i >= comodines %}disabled{% endif %}>
+                💡
+            </button>
+            {% endfor %}
+        </div>
+        <span class="text-[#8B8FB5] text-[10px] self-end" id="comodines-label-mob">
+            {{ comodines }} comodines disponibles
+        </span>
+    </div>
+
+    <!-- niveles mobile -->
+    <div class="bg-[#252848] rounded-xl border border-[#353760] p-3 flex flex-col gap-1.5">
+        <span class="text-[#8B8FB5] text-[9px] font-bold uppercase tracking-widest mb-1">
+            Niveles completados
+        </span>
+        {% for level in levels %}
+        <div class="flex items-center gap-2">
+            <span class="w-2 h-2 rounded-full flex-shrink-0
+                {% if level.estado == 'completado' %}bg-[#F4B942]
+                {% elif level.estado == 'disponible' %}bg-white border border-[#F4B942]
+                {% else %}bg-[#353760]{% endif %}">
+            </span>
+            <span class="flex-1 text-white text-[10px] font-medium truncate">
+                {{ level.titulo }}
+            </span>
+            {% if level.estado == 'completado' %}
+                <span class="text-[#F4B942] text-[10px] font-bold">✓</span>
+            {% elif level.estado == 'disponible' %}
+                <span class="text-[#F4B942] text-[10px] font-bold">{{ level.completados }}/4</span>
+            {% else %}
+                <span class="text-[#5C5F82] text-[10px]">🔒</span>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>
+
+</div>
+
+<!-- modal del quiz -->
+<div id="quiz-modal"
+     class="fixed inset-0 bg-[#000000cc] backdrop-blur-sm z-50 hidden items-center justify-center p-4">
+    <div id="quiz-modal-content" class="w-full max-w-2xl"></div>
+</div>
+
+<script>
+    const modal = document.getElementById('quiz-modal');
+    const modalContent = document.getElementById('quiz-modal-content');
+    let comodinesRestantes = {{ comodines }};
+
+    async function abrirModalQuiz(url) {
+    modal.classList.remove('hidden');
+    modal.classList.add('flex');
+    modalContent.innerHTML = '<div class="text-[#F4B942] text-center text-2xl font-black animate-pulse">Cargando ejercicio...</div>';
+
+    try {
+        const response = await fetch(url);
+        const html = await response.text();
+        modalContent.innerHTML = html;
+
+        // 👇 ejecuta los scripts que vienen dentro del HTML cargado
+        modalContent.querySelectorAll('script').forEach(oldScript => {
+            const newScript = document.createElement('script');
+            newScript.textContent = oldScript.textContent;
+            document.body.appendChild(newScript);
+            document.body.removeChild(newScript);
+        });
+
+        const form = modalContent.querySelector('form');
+        if (form) {
+            form.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                const formData = new FormData(form);
+                const postResponse = await fetch(url, { method: 'POST', body: formData });
+                const resultHtml = await postResponse.text();
+                modalContent.innerHTML = resultHtml;
+            });
+        }
+    } catch (error) {
+        modalContent.innerHTML = '<div class="text-white text-center font-bold">Hubo un error al cargar el ejercicio.</div>';
+    }
+}
+
+    function cerrarModal() {
+        modal.classList.remove('flex');
+        modal.classList.add('hidden');
+        window.location.reload();
+    }
+
+    function toggleDashboard() {
+        const dash = document.getElementById('mobile-dashboard');
+        if (dash.classList.contains('hidden')) {
+            dash.classList.remove('hidden');
+            dash.classList.add('flex');
+        } else {
+            dash.classList.remove('flex');
+            dash.classList.add('hidden');
+        }
+    }
+
+    async function usarComodin(indice) {
+        if (comodinesRestantes <= 0) return;
+
+        try {
+            const response = await fetch('/roadmap/usar-comodin', { method: 'POST' });
+            const data = await response.json();
+            if (!data.ok) return;
+
+            comodinesRestantes = data.comodines;
+            _actualizarVistaComodines();
+        } catch (error) {
+            console.error('error al usar comodin:', error);
+        }
+    }
+
+    function _actualizarVistaComodines() {
+        for (let i = 0; i < 3; i++) {
+            const btn    = document.getElementById('comodin-' + i);
+            const btnMob = document.getElementById('comodin-mob-' + i);
+            if (i >= comodinesRestantes) {
+                [btn, btnMob].forEach(b => {
+                    if (!b) return;
+                    b.classList.add('comodin-usado');
+                    b.disabled = true;
+                });
+            }
+        }
+        const texto = comodinesRestantes + ' comodines disponibles';
+        const label    = document.getElementById('comodines-label');
+        const labelMob = document.getElementById('comodines-label-mob');
+        if (label)    label.textContent    = texto;
+        if (labelMob) labelMob.textContent = texto;
+    }
+</script>
+
+{% endblock %}

@@ -1,0 +1,88 @@
+<div class="bg-[#252848] rounded-2xl border-2 border-[#353760] p-8 shadow-2xl relative w-full">
+        
+    <div class="flex justify-between items-center mb-6 border-b border-[#353760] pb-4">
+        <span class="text-[#F4B942] font-bold uppercase tracking-widest text-xs">
+            Nivel {{ level_id }} • Ejercicio {{ ejercicio_id }}
+        </span>
+
+        <div class="flex items-center gap-3">
+            <!-- botón comodín pequeño con ícono de foco -->
+            <button type="button"
+                    id="btn-comodin"
+                    onclick="activarComodin()"
+                    {% if comodines == 0 %}disabled{% endif %}
+                    class="flex items-center gap-1 px-3 py-1 rounded-full border-2 border-[#F4B942] text-[#F4B942] hover:bg-[#F4B942] hover:text-[#252848] transition-all text-xs font-bold disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-transparent disabled:hover:text-[#F4B942]">
+                💡 <span id="comodines-count">{{ comodines }}</span>
+            </button>
+
+            <button type="button" onclick="cerrarModal()" class="text-[#8B8FB5] hover:text-white transition-colors font-bold text-sm">
+                ✕ Abandonar
+            </button>
+        </div>
+    </div>
+
+    <h1 class="text-2xl text-white font-black mb-8 text-center">{{ pregunta.texto }}</h1>
+
+    <form class="flex flex-col gap-4">
+        {% for opcion in pregunta.opciones %}
+        <label 
+            data-comodin="{{ opcion.comodin | lower }}"
+            class="opcion flex items-center gap-4 p-4 border-2 border-[#353760] rounded-xl cursor-pointer transition-all hover:bg-[#353760] hover:border-[#F4B942] group">
+            
+            <input type="radio" name="respuesta" value="{{ opcion.id }}" required 
+                class="w-5 h-5 text-[#F4B942] bg-[#1A1C38] border-[#353760] focus:ring-[#F4B942]">
+
+            <span class="text-lg group-hover:text-white text-gray-300">{{ opcion.texto }}</span>
+        </label>
+        {% endfor %}
+
+        <button onclick="reproducirSonido()" type="submit" 
+                class="mt-6 w-full py-4 bg-[#F4B942] hover:bg-[#D9A030] text-[#252848] font-black rounded-xl text-lg transition-all shadow-[0_4px_16px_rgba(244,185,66,0.3)] hover:scale-[1.02]">
+            Enviar Respuesta
+        </button>
+    </form>
+</div>
+
+<script>
+    const levelId = {{ level_id }};
+
+function activarComodin() {
+    reproducirSonido();
+    const btn = document.getElementById('btn-comodin');
+    btn.disabled = true;  // deshabilitar el boton de comodin tras click
+    btn.classList.add('opacity-40', 'cursor-not-allowed');
+
+    // efecto visual inmediato
+    const opciones = document.querySelectorAll(".opcion");
+    opciones.forEach(opcion => {
+        if (opcion.dataset.comodin === "true") {
+            opcion.classList.add("bg-gray-700", "border-gray-500", "opacity-50", "pointer-events-none");
+            opcion.querySelector("input").disabled = true;
+        }
+    });
+
+    // confirmar con el backend
+    fetch(`/quiz/${levelId}/comodin`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' }
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.success) {
+            document.getElementById('comodines-count').textContent = data.comodines_restantes;
+        }
+    });
+}
+
+    function reproducirHover() {
+        const sonido = new Audio('/static/sounds/hover.mp3');
+        sonido.play();
+    }
+    function reproducirSonido() {
+        const sonido = new Audio('/static/sounds/click.mp3');
+        sonido.play();
+    }
+        document.querySelectorAll('.opcion').forEach(opcion => {
+        opcion.addEventListener('mouseenter', reproducirHover);
+    });
+</script>
